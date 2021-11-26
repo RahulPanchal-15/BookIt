@@ -130,12 +130,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                   text: " Add your own Venue",
                                 ),
                               ),
-
-                              //Card in which there will be Venue Image and name
-                              ProfileTile(
-                                icon: Icons.favorite,
-                                text: "My Bookings",
-                              ),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -145,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   );
                                 },
                                 child: ProfileTile(
-                                  icon: Icons.check_box,
+                                  icon: Icons.favorite,
                                   text: "My Favorites",
                                 ),
                               ),

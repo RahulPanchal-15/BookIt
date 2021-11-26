@@ -1,3 +1,4 @@
+import 'package:assignment_practice/screens/notifications.dart';
 import 'package:flutter/material.dart';
 
 import './home.dart';
@@ -9,7 +10,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
 
   List<GlobalKey<NavigatorState>> _navigatorKeys = [
     GlobalKey<NavigatorState>(),
@@ -50,8 +51,8 @@ class _MainScreenState extends State<MainScreen> {
               label: 'Profile',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings',
+              icon: Icon(Icons.notifications),
+              label: 'Notifications',
             ),
             // BottomNavigationBarItem(
             //   icon: Icon(Icons.location_on),
@@ -89,11 +90,7 @@ class _MainScreenState extends State<MainScreen> {
           ProfilePage(
             onClick: _goToLogin,
           ),
-          Container(
-            child: Center(
-              child: Text("Settings"),
-            ),
-          )
+          Notifications(),
           // VenueDetailPage(),
         ].elementAt(index);
       },
