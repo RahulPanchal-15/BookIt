@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/request_card.dart';
+import '../widgets/status_card.dart';
 
 class BookingRequestPage extends StatefulWidget {
   const BookingRequestPage({Key? key}) : super(key: key);
@@ -69,7 +70,7 @@ class _BookingRequestPageState extends State<BookingRequestPage> {
                             itemCount: 2,
                             padding: const EdgeInsets.only(top: 10.0),
                             itemBuilder: (context, index) {
-                              return RequestCard("Rahul");
+                              return StatusCard("Rahul", 2);
                             }))
                   ],
                 ),
