@@ -25,7 +25,8 @@ class _WrapperState extends State<Wrapper> {
         if (snapshot.connectionState == ConnectionState.active) {
           final MyUser? user = snapshot.data;
           return MaterialApp(
-            initialRoute: user == null ? '/login' : '/main',
+            // initialRoute: user == null ? '/login' : '/main',
+            initialRoute: '/main',
             routes: {
               '/main': (context) => MainScreen(),
               '/login': (context) => const LoginPage(),

@@ -2,12 +2,12 @@
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/signup_login.dart';
 import 'package:provider/provider.dart';
+
+import './owner_register.dart';
 import '../models/user_model.dart';
 import '../services/my_auth.dart';
 import '../services/auth_service.dart';
-
 import './favourites_listview.dart';
-
 import 'package:flutter/material.dart';
 import '../widgets/profile_tile.dart';
 import '../widgets/profile_card.dart';
@@ -53,7 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             Column(
                               children: [
                                 Container(
-                                  padding: EdgeInsets.all(15.0),
+                                  padding: EdgeInsets.all(10.0),
                                   child: Center(
                                     child: CircleAvatar(
                                       radius: 30.0,
@@ -82,7 +82,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                             //Used Extract Widget for this
                             Container(
-                              margin: EdgeInsets.symmetric(vertical: 30.0),
+                              margin: EdgeInsets.symmetric(vertical: 10.0),
                               child: Column(children: [
                                 ProfileCard(
                                     icon: Icons.email,
@@ -115,6 +115,19 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: ProfileTile(
                                   icon: Icons.place,
                                   text: " My Venue",
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              OwnerRegister()));
+                                },
+                                child: ProfileTile(
+                                  icon: Icons.add,
+                                  text: " Add your own Venue",
                                 ),
                               ),
 

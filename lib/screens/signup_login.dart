@@ -245,7 +245,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   // );
                                                   Navigator
                                                       .pushReplacementNamed(
-                                                          context, '/owner');
+                                                          context, '/main');
                                                 }
                                               } catch (err) {
                                                 print(err);
