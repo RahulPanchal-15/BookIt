@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:assignment_practice/screens/faq.dart';
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/signup_login.dart';
 import 'package:provider/provider.dart';
@@ -56,7 +57,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   padding: EdgeInsets.all(10.0),
                                   child: Center(
                                     child: CircleAvatar(
-                                      radius: 30.0,
+                                      radius: 80.0,
                                       backgroundImage:
                                           AssetImage('images/check.jpg'),
                                     ),
@@ -82,7 +83,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                             //Used Extract Widget for this
                             Container(
-                              margin: EdgeInsets.symmetric(vertical: 10.0),
+                              margin: EdgeInsets.only(top: 20, bottom: 10),
                               child: Column(children: [
                                 ProfileCard(
                                     icon: Icons.email,
@@ -104,19 +105,19 @@ class _ProfilePageState extends State<ProfilePage> {
                             // ),
 
                             Column(children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              BookingRequestPage()));
-                                },
-                                child: ProfileTile(
-                                  icon: Icons.place,
-                                  text: " My Venue",
-                                ),
-                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     Navigator.push(
+                              //         context,
+                              //         MaterialPageRoute(
+                              //             builder: (context) =>
+                              //                 BookingRequestPage()));
+                              //   },
+                              //   child: ProfileTile(
+                              //     icon: Icons.place,
+                              //     text: " My Venue",
+                              //   ),
+                              // ),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -143,9 +144,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                   text: "My Favorites",
                                 ),
                               ),
-                              ProfileTile(
-                                icon: Icons.question_answer,
-                                text: " FAQ",
+                              GestureDetector(
+                                onTap: () {
+                                  print("FAQ");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FAQ(),
+                                    ),
+                                  );
+                                },
+                                child: ProfileTile(
+                                  icon: Icons.question_answer,
+                                  text: " FAQ",
+                                ),
                               ),
                               ProfileTile(
                                 icon: Icons.settings,
