@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StatusCard extends StatefulWidget {
   final String name;
@@ -9,6 +10,15 @@ class StatusCard extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return StatusCardState();
+  }
+}
+
+_makingPhoneCall() async {
+  const url = 'tel:+91 9167979960';
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
 }
 
@@ -80,9 +90,7 @@ class StatusCardState extends State<StatusCard> {
           ),
           ButtonBar(alignment: MainAxisAlignment.spaceAround, children: [
             TextButton(
-                onPressed: () {
-                  // Perform some action
-                },
+                onPressed: _makingPhoneCall,
                 child: Row(children: const <Widget>[
                   Padding(
                     padding: EdgeInsets.fromLTRB(0, 0, 3, 0),
