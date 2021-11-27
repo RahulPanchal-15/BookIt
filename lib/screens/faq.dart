@@ -25,11 +25,20 @@ class _FAQState extends State<FAQ> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-          decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.purple, Colors.white])),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.purple.shade800,
+                // Colors.purple.shade600,
+                Colors.purple.shade400,
+                Colors.purple.shade200,
+                // Colors.purple.shade100,
+                Colors.deepPurpleAccent
+              ],
+            ),
+          ),
           child: Scaffold(
               backgroundColor: Colors.transparent,
               // appBar: ,
@@ -67,7 +76,10 @@ class _FAQState extends State<FAQ> {
                             itemCount: 4,
                             padding: const EdgeInsets.only(top: 10.0),
                             itemBuilder: (context, index) {
-                              return FAQCard("Rishabh");
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: FAQCard("Rishabh"),
+                              );
                             }))
                   ],
                 ),

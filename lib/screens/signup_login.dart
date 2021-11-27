@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
 
 import 'owner_register.dart';
 import '../services/auth_service.dart';
@@ -28,6 +32,24 @@ class _LoginPageState extends State<LoginPage> {
 
   int selection = 0;
   // final FirebaseAuth _auth = FirebaseAuth.instance;
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+
+  Future<void> addUser(String uid, String url) {
+    // Call the user's CollectionReference to add a new user
+    print(uid);
+
+    return users
+        .doc(uid)
+        .set({
+          'name': name, // John Doe
+          'email': email, // Stokes and Sons
+          'number': mobileNumber,
+          'profile': url.isEmpty ? "" : url,
+          'favourites': ["123", "324"]
+        })
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +232,26 @@ class _LoginPageState extends State<LoginPage> {
                                                     // Provider.of<MyAuth>(context,
                                                     //         listen: false)
                                                     //     .setUser(user);
+                                                    if (profileImage != null) {
+                                                      final ref = FirebaseStorage
+                                                          .instance
+                                                          .ref()
+                                                          .child(
+                                                              'profile_images')
+                                                          .child(user.uid +
+                                                              '.jpg');
+                                                      await ref.putFile(
+                                                          profileImage!);
+                                                      print('Step1');
+                                                      final url = await ref
+                                                          .getDownloadURL();
+                                                      await addUser(
+                                                          user.uid, url);
+                                                    } else {
+                                                      await addUser(
+                                                          user.uid, "");
+                                                    }
+
                                                     Navigator.pushReplacement(
                                                       context,
                                                       MaterialPageRoute(

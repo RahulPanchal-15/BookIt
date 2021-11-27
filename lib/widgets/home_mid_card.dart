@@ -88,7 +88,7 @@ class HomeMidCard extends StatelessWidget {
                       ),
                       child: Text(
                         //if setFlag=1 , then Available
-                        "Book!",
+                        "Book",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
