@@ -1,5 +1,9 @@
 import 'package:assignment_practice/screens/venue_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 import '../constants.dart';
 import 'package:get/get.dart';
 import '../widgets/venue_containers.dart';
@@ -208,37 +212,36 @@ class _HomePageState extends State<HomePage> {
             ),
             //Middle Container Card
 
-            Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-              child: CarouselSlider(
-                  items: midCards
-                      .map((e) => ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: HomeMidCard(
-                              name: e[0],
-                              location: e[1],
-                              price: e[2],
-                              image: e[3],
-                              onClick: () {
-                                print(e);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => VenueDetailPage(
-                                        name: e[0],
-                                        location: e[1],
-                                        price: e[2]),
-                                  ),
-                                );
-                              },
-                            ),
-                          ))
-                      .toList(),
-                  options: CarouselOptions(
-                      enlargeCenterPage: true, enableInfiniteScroll: true)),
-            ),
+            // Container(
+            //   decoration:
+            //       BoxDecoration(borderRadius: BorderRadius.circular(10)),
+            //   margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+            //   child: CarouselSlider(
+            //       items: midCards
+            //           .map((e) => ClipRRect(
+            //                 borderRadius: BorderRadius.circular(8),
+            //                 child: HomeMidCard(
+            //                   name: e[0],
+            //                   location: e[1],
+            //                   price: e[2],
+            //                   image: e[3],
+            //                   onClick: () {
+            //                     print(e);
+            //                     Navigator.push(
+            //                       context,
+            //                       MaterialPageRoute(
+            //                         builder: (context) => VenueDetailPage(
+            //                           id: user.uid
+            //                             ),
+            //                       ),
+            //                     );
+            //                   },
+            //                 ),
+            //               ))
+            //           .toList(),
+            //       options: CarouselOptions(
+            //           enlargeCenterPage: true, enableInfiniteScroll: true)),
+            // ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 10, 0, 8),
               child: Row(
@@ -283,12 +286,46 @@ class _HomePageState extends State<HomePage> {
             ),
 
             ///////////////////////////////////////
-            ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: bottomCards.length,
-                itemBuilder: (context, index) {
-                  return bottomCards[index];
+            StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance.collection('venues').snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return ListView(
+                      shrinkWrap: true,
+                      children: snapshot.data!.docs.map((doc) {
+                        print(doc['name']);
+                        return HomeBottomCard(
+                          name: doc['name'],
+                          location: doc['location'],
+                          price: doc['price'],
+                          image: NetworkImage(doc['venues'][0]),
+                          setFlag: false,
+                          filterName: doc['category'],
+                          onClick: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    VenueDetailPage(id: doc.id),
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
+                    );
+                  }
+                  // return ListView.builder(
+                  //     physics: NeverScrollableScrollPhysics(),
+                  //     shrinkWrap: true,
+                  //     itemCount: bottomCards.length,
+                  //     itemBuilder: (context, index) {
+                  //       return bottomCards[index];
+                  //     });
                 }),
             //Search
             //Search CARD Below

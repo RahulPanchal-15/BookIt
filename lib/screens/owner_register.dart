@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
 import 'dart:io';
 
 import '../constants.dart';
@@ -21,8 +25,34 @@ class OwnerRegister extends StatefulWidget {
 
 class _OwnerRegisterState extends State<OwnerRegister> {
   List<File?> venueImages = [];
+  List<String?> venueUrls = [];
   TimeOfDay? startTime;
   TimeOfDay? endTime;
+  // final auth.FirebaseAuth firebaseAuth = auth.FirebaseAuth.instance!.currentUser();
+  auth.User? user = auth.FirebaseAuth.instance.currentUser;
+  CollectionReference venues = FirebaseFirestore.instance.collection('venues');
+
+  Future<void> addVenue() {
+    // Call the user's CollectionReference to add a new user
+    print(user!.uid);
+
+    return venues
+        .doc(user!.uid)
+        .set({
+          'name': data[0], // NMC Turf
+          'description': data[1],
+          'contact': data[2],
+          'work_email': data[3], // Stokes and Sons
+          'category': data[4],
+          'location': data[5],
+          'price': data[6],
+          'startTime': startTime.toString(),
+          'endTime': endTime.toString(),
+          'venues': venueUrls
+        })
+        .then((value) => print("Venue Added"))
+        .catchError((error) => print("Failed to add venue: $error"));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -294,18 +324,26 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                   EdgeInsets.symmetric(horizontal: 50),
                                 ),
                               ),
-                              onPressed: () {
+                              onPressed: () async {
                                 // Provider.of<MyAuth>(context, listen: false)
                                 //     .setIsDone(true);
                                 // Navigator.pop(context);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const OwnerRegister(),
-                                  ),
-                                );
-                                Navigator.pushReplacementNamed(
-                                    context, '/main');
+
+                                for (var img in venueImages) {
+                                  final ref = FirebaseStorage.instance
+                                      .ref()
+                                      .child('venue_images/${user!.uid}')
+                                      .child('${Path.basename(img!.path)}');
+                                  await ref.putFile(img);
+                                  print('Step1');
+                                  final url = await ref.getDownloadURL();
+                                  venueUrls.add(url);
+                                }
+                                print(venueUrls);
+                                await addVenue();
+
+                                // Navigator.pushReplacementNamed(
+                                //     context, '/main');
                               },
                               child: Text("Register"),
                             ),
