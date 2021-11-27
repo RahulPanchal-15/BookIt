@@ -31,7 +31,7 @@ class FAQCardState extends State<FAQCard> {
             // Icon(Icons.person),
             title: Text(
               'Q. What is BookIt?',
-              style: TextStyle(color: Colors.black, fontSize: 18),
+              style: TextStyle(color: Colors.black, fontSize: 17),
             ),
             subtitle: Center(child: Text('- requested by user234')),
           ),
@@ -43,7 +43,7 @@ class FAQCardState extends State<FAQCard> {
                 overflow: TextOverflow.visible,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 16,
+                  fontSize: 17,
                 ),
               ),
             ),

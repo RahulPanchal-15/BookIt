@@ -47,6 +47,11 @@ dependencies:
   provider: ^6.0.1
   firebase_auth_web: ^3.2.0
   url_launcher: ^6.0.15
+<<<<<<< HEAD
+=======
+  cloud_firestore: ^3.1.0
+  firebase_storage: ^10.1.0
+>>>>>>> 6299f5596165f71ac1b318d7d078bed8b44fa141
 
 dev_dependencies:
   flutter_test:
