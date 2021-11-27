@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:assignment_practice/screens/faq.dart';
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/signup_login.dart';
 import 'package:provider/provider.dart';
@@ -149,9 +150,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                   text: "My Favorites",
                                 ),
                               ),
-                              ProfileTile(
-                                icon: Icons.question_answer,
-                                text: " FAQ",
+                              GestureDetector(
+                                onTap: () {
+                                  print("FAQ");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FAQ(),
+                                    ),
+                                  );
+                                },
+                                child: ProfileTile(
+                                  icon: Icons.question_answer,
+                                  text: " FAQ",
+                                ),
                               ),
                               ProfileTile(
                                 icon: Icons.settings,
