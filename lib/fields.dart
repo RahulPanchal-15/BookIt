@@ -6,7 +6,6 @@ class OwnerFields {
     'Description',
     "Contact",
     'Work Email(if any)',
-    "Category",
     "Location",
     "Price",
   ];

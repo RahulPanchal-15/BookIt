@@ -45,7 +45,8 @@ class _LoginPageState extends State<LoginPage> {
           'email': email, // Stokes and Sons
           'number': mobileNumber,
           'profile': url.isEmpty ? "" : url,
-          'favourites': ["123", "324"]
+          'favourites': ["123", "324"],
+          'isOwner': false,
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
@@ -251,14 +252,9 @@ class _LoginPageState extends State<LoginPage> {
                                                       await addUser(
                                                           user.uid, "");
                                                     }
-
-                                                    Navigator.pushReplacement(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const OwnerRegister(),
-                                                      ),
-                                                    );
+                                                    Navigator
+                                                        .pushReplacementNamed(
+                                                            context, '/main');
                                                   }
                                                 } catch (err) {
                                                   print(err);
@@ -275,19 +271,6 @@ class _LoginPageState extends State<LoginPage> {
                                                     password,
                                                   );
                                                   if (user != null) {
-                                                    // MyUser user = MyUser(result.user!.uid,
-                                                    //     result.user!.email);
-                                                    // Provider.of<MyAuth>(context,
-                                                    //         listen: false)
-                                                    //     .setUser(user);
-
-                                                    // Navigator.pushReplacement(
-                                                    //   context,
-                                                    //   MaterialPageRoute(
-                                                    //     builder: (context) =>
-                                                    //         const OwnerRegister(),
-                                                    //   ),
-                                                    // );
                                                     Navigator
                                                         .pushReplacementNamed(
                                                             context, '/main');

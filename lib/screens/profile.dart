@@ -3,6 +3,8 @@ import 'package:assignment_practice/screens/faq.dart';
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/signup_login.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import './owner_register.dart';
 import '../models/user_model.dart';
@@ -25,30 +27,37 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final _auth = Provider.of<AuthService>(context);
-    return StreamBuilder<MyUser?>(
-      stream: _auth.user,
-      builder: (_, AsyncSnapshot<MyUser?> snapshot) {
-        if (snapshot.connectionState == ConnectionState.active) {
-          final MyUser? user = snapshot.data;
-          return user == null
-              ? Center(
-                  child: ElevatedButton(
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all(Colors.purple),
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                  ),
-                  onPressed: () {
-                    widget.onClick!();
-                  },
-                  child: Text("Please Login First"),
-                ))
-              : SafeArea(
-                  child: Center(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 10.0),
-                      child: SingleChildScrollView(
-                        child: Column(
+    auth.User? user = auth.FirebaseAuth.instance.currentUser;
+
+    return user == null
+        ? Center(
+            child: ElevatedButton(
+            style: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all(Colors.purple),
+              backgroundColor: MaterialStateProperty.all(Colors.white),
+            ),
+            onPressed: () {
+              widget.onClick!();
+            },
+            child: Text("Please Login First"),
+          ))
+        : SafeArea(
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                child: SingleChildScrollView(
+                  child: StreamBuilder<DocumentSnapshot?>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        return Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             Column(
@@ -59,12 +68,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                     child: CircleAvatar(
                                       radius: 80.0,
                                       backgroundImage:
-                                          AssetImage('images/check.jpg'),
+                                          snapshot.data!['profile'] != null
+                                              ? NetworkImage(
+                                                  snapshot.data!['profile'])
+                                              : AssetImage('images/check.jpg')
+                                                  as ImageProvider,
                                     ),
                                   ),
                                 ),
                                 Text(
-                                  'Marcus Ericson',
+                                  snapshot.data!['name'] ?? 'Marcus Ericson',
                                   style: TextStyle(
                                     fontSize: 18.0,
                                     fontFamily: 'NotoSans',
@@ -87,50 +100,31 @@ class _ProfilePageState extends State<ProfilePage> {
                               child: Column(children: [
                                 ProfileCard(
                                     icon: Icons.email,
-                                    text: "ericson1234@gmail.com"),
+                                    text: snapshot.data!['email'] ??
+                                        "ericson1234@gmail.com"),
                                 ProfileCard(
-                                    icon: Icons.phone, text: "+1234 567 891"),
+                                    icon: Icons.phone,
+                                    text: snapshot.data!['number'] ??
+                                        "+1234 567 891"),
                               ]),
                             ),
 
-                            // Padding(
-                            //   padding: const EdgeInsets.all(8.0),
-                            //   child: Text(
-                            //     "My BookIt Info:",
-                            //     style: TextStyle(
-                            //       fontWeight: FontWeight.bold,
-                            //       fontSize: 18.0,
-                            //     ),
-                            //   ),
-                            // ),
-
                             Column(children: [
-                              // GestureDetector(
-                              //   onTap: () {
-                              //     Navigator.push(
-                              //         context,
-                              //         MaterialPageRoute(
-                              //             builder: (context) =>
-                              //                 BookingRequestPage()));
-                              //   },
-                              //   child: ProfileTile(
-                              //     icon: Icons.place,
-                              //     text: " My Venue",
-                              //   ),
-                              // ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              OwnerRegister()));
-                                },
-                                child: ProfileTile(
-                                  icon: Icons.add,
-                                  text: " Add your own Venue",
-                                ),
-                              ),
+                              !snapshot.data!['isOwner']
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    OwnerRegister()));
+                                      },
+                                      child: ProfileTile(
+                                        icon: Icons.add,
+                                        text: " Add your own Venue",
+                                      ),
+                                    )
+                                  : Container(),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -184,19 +178,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ])
                           ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-        } else {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
+                        );
+                      }),
+                ),
+              ),
             ),
           );
-        }
-      },
-    );
   }
 }

@@ -23,68 +23,6 @@ class _HomePageState extends State<HomePage> {
   String search = "";
   bool isSelected = false;
   int filter = -1;
-  List midCards = [
-    [
-      'Venue',
-      'Mumbai',
-      '2K/hr',
-      AssetImage('images/check.jpg'),
-      "Go to this venue"
-    ],
-    [
-      'Venue2',
-      'Mumbai',
-      '2K/hr',
-      AssetImage('images/check.jpg'),
-      "Go to this venue"
-    ],
-  ];
-  List bottomCards = [
-    HomeBottomCard(
-      name: "Venue Name",
-      location: "Mumbai",
-      price: "2K/hr",
-      image: AssetImage('images/check.jpg'),
-      setFlag: false,
-      filterName: "Turf",
-      onClick: () {
-        print("Filter Name Success!!!");
-      },
-    ),
-    HomeBottomCard(
-      name: "AOT",
-      location: "Chennai",
-      price: "4K/hr",
-      image: AssetImage('images/aot.jfif'),
-      setFlag: true,
-      filterName: "Banquet",
-      onClick: () {
-        print("Filter Name Success!!!");
-      },
-    ),
-    HomeBottomCard(
-      name: "Yea",
-      location: "Mumbai",
-      price: "2K/hr",
-      image: AssetImage('images/check.jpg'),
-      setFlag: false,
-      filterName: "Turf",
-      onClick: () {
-        print("Filter Name Success!!!");
-      },
-    ),
-    HomeBottomCard(
-      name: "Venue name",
-      location: "Mumbai",
-      price: "2K/hr",
-      image: AssetImage('images/check.jpg'),
-      setFlag: false,
-      filterName: "Turf",
-      onClick: () {
-        print("Filter Name Success!!!");
-      },
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +241,9 @@ class _HomePageState extends State<HomePage> {
                           name: doc['name'],
                           location: doc['location'],
                           price: doc['price'],
-                          image: NetworkImage(doc['venues'][0]),
+                          image: doc['venues'].isEmpty
+                              ? AssetImage('images/aot.jfif') as ImageProvider
+                              : NetworkImage(doc['venues'][0]),
                           setFlag: false,
                           filterName: doc['category'],
                           onClick: () {

@@ -30,7 +30,7 @@ class _WrapperState extends State<Wrapper> {
             routes: {
               '/main': (context) => MainScreen(),
               '/login': (context) => const LoginPage(),
-              '/owner': (context) => const OwnerRegister(),
+              '/owner': (context) => OwnerRegister(),
             },
           );
         } else {
