@@ -20,13 +20,12 @@ import '../models/user_model.dart';
 OwnerFields fields = OwnerFields();
 final data = fields.data;
 final controllers = fields.generateControllers();
+final FocusNode _focusNode = FocusNode();
 var venueTypes = ['Turf', 'Studio', 'Banquet'];
-String? category;
+String? category = "Turf";
 
 class OwnerRegister extends StatefulWidget {
-  OwnerRegister({Key? key}) {
-    category = venueTypes[0];
-  }
+  OwnerRegister({Key? key});
   @override
   _OwnerRegisterState createState() => _OwnerRegisterState();
 }
@@ -114,6 +113,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                 child: Column(children: [
                                   DropdownButton(
                                     // Initial Value
+
                                     value: category,
 
                                     // Down Arrow Icon
@@ -129,8 +129,8 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                     // After selecting the desired option,it will
                                     // change button value to selected value
                                     onChanged: (String? newValue) {
-                                      FocusManager.instance.primaryFocus!
-                                          .unfocus();
+                                      FocusScope.of(context)
+                                          .requestFocus(_focusNode);
                                       setState(() {
                                         category = newValue!;
                                       });

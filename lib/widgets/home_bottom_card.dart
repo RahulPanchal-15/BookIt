@@ -7,7 +7,7 @@ class HomeBottomCard extends StatelessWidget {
   final String? location;
   final String? price;
   final ImageProvider? image;
-  final bool? setFlag;
+
   final String? filterName;
   final void Function()? onClick;
   const HomeBottomCard({
@@ -16,14 +16,11 @@ class HomeBottomCard extends StatelessWidget {
     this.location,
     this.price,
     this.image,
-    this.setFlag,
     this.filterName,
     this.onClick,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    var button_text = setFlag! ? "Available" : "Booked";
-    var button_color = setFlag! ? Colors.green : Colors.redAccent[700];
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10.0),
       child: Card(
@@ -89,7 +86,7 @@ class HomeBottomCard extends StatelessWidget {
                         SizedBox(
                           height: 20,
                           child: ElevatedButton(
-                            onPressed: onClick,
+                            onPressed: () {},
                             style: ButtonStyle(
                               backgroundColor:
                                   MaterialStateProperty.all(Colors.black),
@@ -116,9 +113,10 @@ class HomeBottomCard extends StatelessWidget {
                         SizedBox(
                           height: 20,
                           child: ElevatedButton(
+                            onPressed: onClick,
                             style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStateProperty.all(button_color),
+                                  MaterialStateProperty.all(Colors.green),
                               shape: MaterialStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
@@ -128,13 +126,12 @@ class HomeBottomCard extends StatelessWidget {
                             ),
                             child: Text(
                               //if setFlag=1 , then Available
-                              button_text,
+                              "Book",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12.0,
                               ),
                             ),
-                            onPressed: () {},
                           ),
                         ),
                       ],

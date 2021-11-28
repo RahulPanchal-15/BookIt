@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: Column(
                               children: [
                                 CustomTextField(
-                                  hintText: "Enter Email or Username",
+                                  hintText: "Enter Email or Username *",
                                   onChange: (value) {
                                     setState(() {
                                       email = value;
@@ -118,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 selection == 0
                                     ? CustomTextField(
-                                        hintText: "Your Name",
+                                        hintText: "Your Name *",
                                         onChange: (value) {
                                           setState(() {
                                             name = value;
@@ -128,7 +128,7 @@ class _LoginPageState extends State<LoginPage> {
                                     : Container(),
                                 selection == 0
                                     ? CustomTextField(
-                                        hintText: "Mobile Number",
+                                        hintText: "Mobile Number *",
                                         onChange: (value) {
                                           setState(() {
                                             mobileNumber = value;
@@ -137,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                                       )
                                     : Container(),
                                 CustomPasswordField(
-                                  hintText: "Password",
+                                  hintText: "Password *",
                                   showPass: false,
                                   onChange: (value) {
                                     setState(() {
@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 selection == 0
                                     ? CustomPasswordField(
-                                        hintText: "Confirm Password",
+                                        hintText: "Confirm Password *",
                                         showPass: false,
                                         onChange: (value) {
                                           setState(() {

@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String search = "";
   bool isSelected = false;
-  int filter = -1;
+  String filter = "Turf";
 
   @override
   Widget build(BuildContext context) {
@@ -109,29 +109,29 @@ class _HomePageState extends State<HomePage> {
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter == 0 ? filter = -1 : filter = 0;
+                      filter = filter == "Turf" ? "" : "Turf";
                     });
                   },
                   text: "Turfs",
-                  isSelected: filter == 0 ? true : false,
+                  isSelected: filter == "Turf" ? true : false,
                 ),
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter == 1 ? filter = -1 : filter = 1;
+                      filter = filter == "Studio" ? "" : "Studio";
                     });
                   },
-                  text: "Studio",
-                  isSelected: filter == 1 ? true : false,
+                  text: "Studios",
+                  isSelected: filter == "Studio" ? true : false,
                 ),
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter == 2 ? filter = -1 : filter = 2;
+                      filter = filter == "Banquet" ? "" : "Banquet";
                     });
                   },
                   text: "Banquets",
-                  isSelected: filter == 2 ? true : false,
+                  isSelected: filter == "Banquet" ? true : false,
                 ),
               ],
             ),
@@ -185,7 +185,7 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 children: <Widget>[
                   Text(
-                    "Search:",
+                    "Filter:",
                     style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.purple,
@@ -210,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Text(
                         //if setFlag=1 , then Available
-                        "All",
+                        filter == "" ? "All" : "$filter",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12.0,
@@ -225,14 +225,22 @@ class _HomePageState extends State<HomePage> {
 
             ///////////////////////////////////////
             StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection('venues').snapshots(),
+                stream: filter == ""
+                    ? FirebaseFirestore.instance
+                        .collection('venues')
+                        .snapshots()
+                    : FirebaseFirestore.instance
+                        .collection('venues')
+                        .where("category", isEqualTo: "${filter}")
+                        .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
+                    print(snapshot.hasData);
                     return Center(
                       child: CircularProgressIndicator(),
                     );
                   } else {
+                    print(snapshot);
                     return ListView(
                       shrinkWrap: true,
                       children: snapshot.data!.docs.map((doc) {
@@ -244,7 +252,6 @@ class _HomePageState extends State<HomePage> {
                           image: doc['venues'].isEmpty
                               ? AssetImage('images/aot.jfif') as ImageProvider
                               : NetworkImage(doc['venues'][0]),
-                          setFlag: false,
                           filterName: doc['category'],
                           onClick: () {
                             Navigator.push(

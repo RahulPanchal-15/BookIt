@@ -121,7 +121,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       },
                                       child: ProfileTile(
                                         icon: Icons.add,
-                                        text: " Add your own Venue",
+                                        text: "Add your own Venue",
                                       ),
                                     )
                                   : Container(),
