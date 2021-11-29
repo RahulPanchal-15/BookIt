@@ -27,7 +27,7 @@ class _NotificationsState extends State<Notifications> {
             indicatorColor: Colors.white,
             tabs: <Widget>[
               Tab(
-                text: "My Requests",
+                text: "Incoming Requests",
               ),
               Tab(
                 text: "My Bookings",

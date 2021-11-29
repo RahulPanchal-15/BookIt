@@ -1,5 +1,9 @@
 import 'package:assignment_practice/screens/venue_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
 import '../constants.dart';
 import 'package:get/get.dart';
 import '../widgets/venue_containers.dart';
@@ -9,7 +13,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
   final void Function()? onClick;
-  const HomePage({Key? key, this.onClick}) : super(key: key);
+  final void Function()? changeBottomTab;
+  const HomePage({Key? key, this.onClick, this.changeBottomTab})
+      : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -18,69 +24,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String search = "";
   bool isSelected = false;
-  int filter = -1;
-  List midCards = [
-    [
-      'Venue',
-      'Mumbai',
-      '2K/hr',
-      AssetImage('images/check.jpg'),
-      "Go to this venue"
-    ],
-    [
-      'Venue2',
-      'Mumbai',
-      '2K/hr',
-      AssetImage('images/check.jpg'),
-      "Go to this venue"
-    ],
-  ];
-  List bottomCards = [
-    HomeBottomCard(
-      name: "Venue Name",
-      location: "Mumbai",
-      price: "2K/hr",
-      image: AssetImage('images/check.jpg'),
-      setFlag: false,
-      filterName: "Turf",
-      onClick: () {
-        print("Filter Name Success!!!");
-      },
-    ),
-    HomeBottomCard(
-      name: "AOT",
-      location: "Chennai",
-      price: "4K/hr",
-      image: AssetImage('images/aot.jfif'),
-      setFlag: true,
-      filterName: "Banquet",
-      onClick: () {
-        print("Filter Name Success!!!");
-      },
-    ),
-    HomeBottomCard(
-      name: "Yea",
-      location: "Mumbai",
-      price: "2K/hr",
-      image: AssetImage('images/check.jpg'),
-      setFlag: false,
-      filterName: "Turf",
-      onClick: () {
-        print("Filter Name Success!!!");
-      },
-    ),
-    HomeBottomCard(
-      name: "Venue name",
-      location: "Mumbai",
-      price: "2K/hr",
-      image: AssetImage('images/check.jpg'),
-      setFlag: false,
-      filterName: "Turf",
-      onClick: () {
-        print("Filter Name Success!!!");
-      },
-    ),
-  ];
+  String filter = "Turf";
+  final venueRef = FirebaseFirestore.instance.collection('venues');
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +36,6 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.list,
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CircleAvatar(
@@ -167,84 +106,71 @@ class _HomePageState extends State<HomePage> {
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter == 0 ? filter = -1 : filter = 0;
+                      filter = filter == "Turf" ? "" : "Turf";
                     });
                   },
                   text: "Turfs",
-                  isSelected: filter == 0 ? true : false,
+                  isSelected: filter == "Turf" ? true : false,
                 ),
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter == 1 ? filter = -1 : filter = 1;
+                      filter = filter == "Studio" ? "" : "Studio";
                     });
                   },
-                  text: "Studio",
-                  isSelected: filter == 1 ? true : false,
+                  text: "Studios",
+                  isSelected: filter == "Studio" ? true : false,
                 ),
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter == 2 ? filter = -1 : filter = 2;
+                      filter = filter == "Banquet" ? "" : "Banquet";
                     });
                   },
                   text: "Banquets",
-                  isSelected: filter == 2 ? true : false,
+                  isSelected: filter == "Banquet" ? true : false,
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Align(
-                alignment: Alignment(-0.97, 0),
-                child: Text(
-                  "Explore",
-                  style: TextStyle(
-                    color: Colors.purple,
-                    fontSize: 18.0,
-                  ),
-                ),
-              ),
-            ),
+
             //Middle Container Card
 
-            Container(
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(10)),
-              margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
-              child: CarouselSlider(
-                  items: midCards
-                      .map((e) => ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: HomeMidCard(
-                              name: e[0],
-                              location: e[1],
-                              price: e[2],
-                              image: e[3],
-                              onClick: () {
-                                print(e);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => VenueDetailPage(
-                                        name: e[0],
-                                        location: e[1],
-                                        price: e[2]),
-                                  ),
-                                );
-                              },
-                            ),
-                          ))
-                      .toList(),
-                  options: CarouselOptions(
-                      enlargeCenterPage: true, enableInfiniteScroll: true)),
-            ),
+            // Container(
+            //   decoration:
+            //       BoxDecoration(borderRadius: BorderRadius.circular(10)),
+            //   margin: const EdgeInsets.fromLTRB(0, 10, 0, 20),
+            //   child: CarouselSlider(
+            //       items: midCards
+            //           .map((e) => ClipRRect(
+            //                 borderRadius: BorderRadius.circular(8),
+            //                 child: HomeMidCard(
+            //                   name: e[0],
+            //                   location: e[1],
+            //                   price: e[2],
+            //                   image: e[3],
+            //                   onClick: () {
+            //                     print(e);
+            //                     Navigator.push(
+            //                       context,
+            //                       MaterialPageRoute(
+            //                         builder: (context) => VenueDetailPage(
+            //                           id: user.uid
+            //                             ),
+            //                       ),
+            //                     );
+            //                   },
+            //                 ),
+            //               ))
+            //           .toList(),
+            //       options: CarouselOptions(
+            //           enlargeCenterPage: true, enableInfiniteScroll: true)),
+            // ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 10, 0, 8),
               child: Row(
                 children: <Widget>[
                   Text(
-                    "Search:",
+                    search == "" ? "Filter:" : "Showing Results for:",
                     style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.purple,
@@ -269,7 +195,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Text(
                         //if setFlag=1 , then Available
-                        "All",
+                        search == ""
+                            ? (filter == "" ? "All" : "$filter")
+                            : search.toUpperCase(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12.0,
@@ -283,12 +211,63 @@ class _HomePageState extends State<HomePage> {
             ),
 
             ///////////////////////////////////////
-            ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: bottomCards.length,
-                itemBuilder: (context, index) {
-                  return bottomCards[index];
+            StreamBuilder<QuerySnapshot>(
+                stream: search == ""
+                    ? (filter == ""
+                        ? venueRef
+                            // .orderBy('createdOn', descending: true)
+                            .snapshots()
+                        : venueRef
+                            .where("category", isEqualTo: "${filter}")
+                            //.orderBy('createdOn', descending: true)
+                            .snapshots())
+                    : venueRef
+                        .where('name',
+                            isGreaterThanOrEqualTo: search.toUpperCase())
+                        .where('name', isLessThan: search.toUpperCase() + "z")
+                        //.orderBy('createdOn', descending: true)
+                        .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    print(snapshot.hasData);
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    print(snapshot);
+                    return ListView(
+                      shrinkWrap: true,
+                      children: snapshot.data!.docs.map((doc) {
+                        print(doc['name']);
+                        return HomeBottomCard(
+                          name: doc['name'],
+                          location: doc['location'],
+                          price: doc['price'],
+                          image: doc['venues'].isEmpty
+                              ? AssetImage('images/aot.jfif') as ImageProvider
+                              : NetworkImage(doc['venues'][0]),
+                          filterName: doc['category'],
+                          onClick: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => VenueDetailPage(
+                                    id: doc.id,
+                                    goToNotifications: widget.changeBottomTab),
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
+                    );
+                  }
+                  // return ListView.builder(
+                  //     physics: NeverScrollableScrollPhysics(),
+                  //     shrinkWrap: true,
+                  //     itemCount: bottomCards.length,
+                  //     itemBuilder: (context, index) {
+                  //       return bottomCards[index];
+                  //     });
                 }),
             //Search
             //Search CARD Below

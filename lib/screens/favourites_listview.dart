@@ -23,7 +23,6 @@ class _FavouritesState extends State<Favourites> {
       location: "Mumbai",
       price: "2K/hr",
       image: AssetImage('images/check.jpg'),
-      setFlag: false,
       filterName: "Turf",
       onClick: () {
         print("Filter Name Success!!!");
@@ -34,7 +33,6 @@ class _FavouritesState extends State<Favourites> {
       location: "Chennai",
       price: "4K/hr",
       image: AssetImage('images/aot.jfif'),
-      setFlag: true,
       filterName: "Banquet",
       onClick: () {
         print("Filter Name Success!!!");
@@ -45,7 +43,6 @@ class _FavouritesState extends State<Favourites> {
       location: "Mumbai",
       price: "2K/hr",
       image: AssetImage('images/check.jpg'),
-      setFlag: false,
       filterName: "Turf",
       onClick: () {
         print("Filter Name Success!!!");
@@ -56,7 +53,6 @@ class _FavouritesState extends State<Favourites> {
       location: "Mumbai",
       price: "2K/hr",
       image: AssetImage('images/check.jpg'),
-      setFlag: false,
       filterName: "Turf",
       onClick: () {
         print("Filter Name Success!!!");

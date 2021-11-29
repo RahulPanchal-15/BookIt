@@ -10,7 +10,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 2;
 
   List<GlobalKey<NavigatorState>> _navigatorKeys = [
     GlobalKey<NavigatorState>(),
@@ -82,12 +82,19 @@ class _MainScreenState extends State<MainScreen> {
     Navigator.pushReplacementNamed(context, '/login');
   }
 
+  void _goToTab(int tabNo) {
+    setState(() {
+      _selectedIndex = tabNo;
+    });
+  }
+
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context, int index) {
     return {
       '/': (context) {
         return [
-          HomePage(onClick: _next),
+          HomePage(onClick: _next, changeBottomTab: () => _goToTab(2)),
           ProfilePage(
+            changeBottomTab: () => _goToTab(0),
             onClick: _goToLogin,
           ),
           Notifications(),

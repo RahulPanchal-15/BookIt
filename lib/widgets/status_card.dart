@@ -28,11 +28,7 @@ class StatusCardState extends State<StatusCard> {
   Widget get StatusCard {
     return Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        color: widget.status == 1
-            ? Colors.green.shade200
-            : widget.status == 2
-                ? Colors.red.shade400
-                : Colors.yellow.shade200,
+        color: Colors.white,
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           const ListTile(
             leading: CircleAvatar(
@@ -89,22 +85,65 @@ class StatusCardState extends State<StatusCard> {
             ),
           ),
           ButtonBar(alignment: MainAxisAlignment.spaceAround, children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+                primary: widget.status == 0
+                    ? Colors.red[800]
+                    : widget.status == 1
+                        ? Colors.green
+                        : Colors.yellow[900],
+              ),
+              onPressed: () {},
+              child: Row(children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 3, 0),
+                  child: Icon(
+                    widget.status == 0
+                        ? Icons.cancel
+                        : widget.status == 1
+                            ? Icons.check
+                            : Icons.pending,
+                    size: 15,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  widget.status == 0
+                      ? "Rejected"
+                      : widget.status == 1
+                          ? "Accepted"
+                          : "Pending",
+                  style: TextStyle(
+                      color: Colors.white,
+                      // widget.status == 0
+                      //     ? Colors.red
+                      //     : widget.status == 1
+                      //         ? Colors.green
+                      //         : Colors.yellow,
+                      fontSize: 18),
+                ),
+              ]),
+            ),
             TextButton(
-                onPressed: _makingPhoneCall,
-                child: Row(children: const <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 3, 0),
-                    child: Icon(
-                      Icons.call,
-                      size: 20,
-                      color: Colors.black,
-                    ),
+              onPressed: _makingPhoneCall,
+              child: Row(children: const <Widget>[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 3, 0),
+                  child: Icon(
+                    Icons.call,
+                    size: 20,
+                    color: Colors.black,
                   ),
-                  Text(
-                    'Call',
-                    style: TextStyle(color: Colors.black, fontSize: 20),
-                  ),
-                ])),
+                ),
+                Text(
+                  'Call',
+                  style: TextStyle(color: Colors.black, fontSize: 20),
+                ),
+              ]),
+            ),
           ])
         ]));
   }

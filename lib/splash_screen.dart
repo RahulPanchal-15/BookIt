@@ -13,7 +13,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     Timer(
-        const Duration(seconds: 2),
+        const Duration(seconds: 1),
         () => Navigator.pushReplacement<void, void>(
             context,
             MaterialPageRoute<void>(
