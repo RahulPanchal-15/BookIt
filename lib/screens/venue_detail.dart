@@ -5,9 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-import '../widgets/select_time.dart';
+import '../screens/signup_login.dart';
+import '../utils/select_time.dart';
 import '../constants.dart';
-import '../widgets/select_date.dart';
+import '../utils/select_date.dart';
 
 class VenueDetailPage extends StatefulWidget {
   // final String? name;
@@ -15,8 +16,10 @@ class VenueDetailPage extends StatefulWidget {
   // final String? description;
   // final String? price;
   final String? id;
+  final void Function()? goToNotifications;
 
-  const VenueDetailPage({Key? key, this.id}) : super(key: key);
+  const VenueDetailPage({Key? key, this.id, this.goToNotifications})
+      : super(key: key);
 
   @override
   _VenueDetailPageState createState() => _VenueDetailPageState();
@@ -47,6 +50,18 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
       IconData(57634, fontFamily: 'MaterialIcons');
   static const IconData call_outlined =
       IconData(57638, fontFamily: 'MaterialIcons');
+  CollectionReference venues = FirebaseFirestore.instance.collection('venues');
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference requests = FirebaseFirestore.instance.collection('users');
+
+  Future<void> addRequest() {
+    return requests
+        .add({
+          'ownerId': widget.id,
+        })
+        .then((value) => print("Venue Added"))
+        .catchError((error) => print("Failed to add venue: $error"));
+  }
 
   var kBoxDecoration = BoxDecoration(
     borderRadius: BorderRadius.circular(20),
@@ -308,7 +323,25 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                     fontSize: 20.0,
                                   ),
                                 ),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  auth.User? user =
+                                      auth.FirebaseAuth.instance.currentUser;
+                                  if (user == null) {
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            LoginPage(),
+                                      ),
+                                      (route) => false,
+                                    );
+                                  } else {
+                                    // await addRequest();
+
+                                    Navigator.pop(context);
+                                    widget.goToNotifications!();
+                                  }
+                                },
                               ),
                             ),
                           )

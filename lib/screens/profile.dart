@@ -8,7 +8,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import './owner_register.dart';
 import '../models/user_model.dart';
-import '../services/my_auth.dart';
 import '../services/auth_service.dart';
 import './favourites_listview.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +16,10 @@ import '../widgets/profile_card.dart';
 
 class ProfilePage extends StatefulWidget {
   final void Function()? onClick;
-  const ProfilePage({Key? key, this.onClick}) : super(key: key);
+  final void Function()? changeBottomTab;
+
+  const ProfilePage({Key? key, this.onClick, this.changeBottomTab})
+      : super(key: key);
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -117,7 +119,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    OwnerRegister()));
+                                                    OwnerRegister(
+                                                        goToHome: widget
+                                                            .changeBottomTab)));
                                       },
                                       child: ProfileTile(
                                         icon: Icons.add,

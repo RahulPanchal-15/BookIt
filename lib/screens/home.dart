@@ -13,7 +13,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 class HomePage extends StatefulWidget {
   final void Function()? onClick;
-  const HomePage({Key? key, this.onClick}) : super(key: key);
+  final void Function()? changeBottomTab;
+  const HomePage({Key? key, this.onClick, this.changeBottomTab})
+      : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -23,6 +25,7 @@ class _HomePageState extends State<HomePage> {
   String search = "";
   bool isSelected = false;
   String filter = "Turf";
+  final venueRef = FirebaseFirestore.instance.collection('venues');
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +36,6 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Icon(
-                    Icons.list,
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: CircleAvatar(
@@ -135,19 +132,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Align(
-                alignment: Alignment(-0.97, 0),
-                child: Text(
-                  "Explore",
-                  style: TextStyle(
-                    color: Colors.purple,
-                    fontSize: 18.0,
-                  ),
-                ),
-              ),
-            ),
+
             //Middle Container Card
 
             // Container(
@@ -185,7 +170,7 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 children: <Widget>[
                   Text(
-                    "Filter:",
+                    search == "" ? "Filter:" : "Showing Results for:",
                     style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.purple,
@@ -210,7 +195,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Text(
                         //if setFlag=1 , then Available
-                        filter == "" ? "All" : "$filter",
+                        search == ""
+                            ? (filter == "" ? "All" : "$filter")
+                            : search.toUpperCase(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12.0,
@@ -225,13 +212,20 @@ class _HomePageState extends State<HomePage> {
 
             ///////////////////////////////////////
             StreamBuilder<QuerySnapshot>(
-                stream: filter == ""
-                    ? FirebaseFirestore.instance
-                        .collection('venues')
-                        .snapshots()
-                    : FirebaseFirestore.instance
-                        .collection('venues')
-                        .where("category", isEqualTo: "${filter}")
+                stream: search == ""
+                    ? (filter == ""
+                        ? venueRef
+                            // .orderBy('createdOn', descending: true)
+                            .snapshots()
+                        : venueRef
+                            .where("category", isEqualTo: "${filter}")
+                            //.orderBy('createdOn', descending: true)
+                            .snapshots())
+                    : venueRef
+                        .where('name',
+                            isGreaterThanOrEqualTo: search.toUpperCase())
+                        .where('name', isLessThan: search.toUpperCase() + "z")
+                        //.orderBy('createdOn', descending: true)
                         .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
@@ -257,8 +251,9 @@ class _HomePageState extends State<HomePage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    VenueDetailPage(id: doc.id),
+                                builder: (context) => VenueDetailPage(
+                                    id: doc.id,
+                                    goToNotifications: widget.changeBottomTab),
                               ),
                             );
                           },

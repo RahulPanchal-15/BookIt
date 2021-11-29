@@ -1,10 +1,10 @@
+import 'package:assignment_practice/widgets/error_msg.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as Path;
 
 import 'owner_register.dart';
@@ -13,7 +13,8 @@ import '../constants.dart';
 import '../widgets/custom_textfield.dart';
 import '../widgets/custom_password.dart';
 import '../widgets/toggle_switch.dart';
-import '../widgets/pick_image.dart';
+import '../utils/pick_image.dart';
+import '../utils/validation.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -29,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
   String name = "";
   String mobileNumber = "";
   File? profileImage;
+  String? error;
 
   int selection = 0;
   // final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -37,7 +39,6 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> addUser(String uid, String url) {
     // Call the user's CollectionReference to add a new user
     print(uid);
-
     return users
         .doc(uid)
         .set({
@@ -220,9 +221,14 @@ class _LoginPageState extends State<LoginPage> {
                                       style: kButtonStyle,
                                       onPressed: selection == 0
                                           ? () async {
-                                              if ((email != '' &&
-                                                      password != '') &&
-                                                  (password == cPassword)) {
+                                              String msg = await Validation
+                                                  .validateSignup(
+                                                      email,
+                                                      password,
+                                                      cPassword,
+                                                      name,
+                                                      mobileNumber);
+                                              if (msg == "") {
                                                 try {
                                                   final user = await _auth
                                                       .createUserWithEmailAndPassword(
@@ -230,9 +236,6 @@ class _LoginPageState extends State<LoginPage> {
                                                     password,
                                                   );
                                                   if (user != null) {
-                                                    // Provider.of<MyAuth>(context,
-                                                    //         listen: false)
-                                                    //     .setUser(user);
                                                     if (profileImage != null) {
                                                       final ref = FirebaseStorage
                                                           .instance
@@ -259,11 +262,19 @@ class _LoginPageState extends State<LoginPage> {
                                                 } catch (err) {
                                                   print(err);
                                                 }
+                                              } else {
+                                                setState(() {
+                                                  error = msg;
+                                                });
                                               }
                                             }
                                           : () async {
-                                              if (email != '' &&
-                                                  password != '') {
+                                              String msg = await Validation
+                                                  .validateLogin(
+                                                email,
+                                                password,
+                                              );
+                                              if (msg == "") {
                                                 try {
                                                   final user = await _auth
                                                       .signInWithEmailAndPassword(
@@ -276,8 +287,17 @@ class _LoginPageState extends State<LoginPage> {
                                                             context, '/main');
                                                   }
                                                 } catch (err) {
+                                                  setState(() {
+                                                    error = err
+                                                        .toString()
+                                                        .split(" ")[0];
+                                                  });
                                                   print(err);
                                                 }
+                                              } else {
+                                                setState(() {
+                                                  error = msg;
+                                                });
                                               }
                                             },
                                       child: Text(
@@ -309,7 +329,10 @@ class _LoginPageState extends State<LoginPage> {
                                   width: 50,
                                   height: 40,
                                 ),
-                              )
+                              ),
+                              (error == "" || error == null)
+                                  ? Container()
+                                  : ErrorMsg(msg: error)
                             ],
                           ),
                         ],

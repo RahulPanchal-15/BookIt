@@ -9,11 +9,11 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 
 import '../constants.dart';
-import '../fields.dart';
-import '../widgets/images_builder.dart';
-import '../widgets/textfield_builder.dart';
-import '../widgets/pick_image.dart';
-import '../widgets/select_time.dart';
+import '../utils/controller_fields.dart';
+import '../utils/images_builder.dart';
+import '../utils/textfield_builder.dart';
+import '../utils/pick_image.dart';
+import '../utils/select_time.dart';
 import '../services/auth_service.dart';
 import '../models/user_model.dart';
 
@@ -25,7 +25,8 @@ var venueTypes = ['Turf', 'Studio', 'Banquet'];
 String? category = "Turf";
 
 class OwnerRegister extends StatefulWidget {
-  OwnerRegister({Key? key});
+  final void Function()? goToHome;
+  OwnerRegister({Key? key, this.goToHome});
   @override
   _OwnerRegisterState createState() => _OwnerRegisterState();
 }
@@ -38,6 +39,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
 
   // auth.User? user = auth.FirebaseAuth.instance.currentUser;
   CollectionReference venues = FirebaseFirestore.instance.collection('venues');
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   Future<void> addVenue(String id) {
     // Call the user's CollectionReference to add a new user
@@ -49,7 +51,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
         .doc(id)
         .set({
           'category': category,
-          'name': controllers[0].text, // NMC Turf
+          'name': controllers[0].text.toUpperCase(), // NMC Turf
           'description': controllers[1].text,
           'contact': controllers[2].text,
           'work_email': controllers[3].text, // Stokes and Sons
@@ -58,10 +60,24 @@ class _OwnerRegisterState extends State<OwnerRegister> {
           'startTime':
               startTime!.hour.toString() + ":" + startTime!.hour.toString(),
           'endTime': endTime!.hour.toString() + ":" + endTime!.hour.toString(),
+          'createdOn': FieldValue.serverTimestamp(),
           'venues': venueUrls
         })
         .then((value) => print("Venue Added"))
         .catchError((error) => print("Failed to add venue: $error"));
+  }
+
+  Future<void> updateIsOwner(String id) {
+    // Call the user's CollectionReference to add a new user
+    print(id);
+    print(data[0]);
+    print(data[1]);
+
+    return users
+        .doc(id)
+        .update({'isOwner': true})
+        .then((value) => print("Owner Status Updated"))
+        .catchError((error) => print("Failed to update owner status: $error"));
   }
 
   @override
@@ -419,6 +435,9 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                       }
                                       print(venueUrls);
                                       await addVenue(user.uid);
+                                      await updateIsOwner(user.uid);
+                                      Navigator.pop(context);
+                                      widget.goToHome!();
                                     },
                                     child: Text("Register"),
                                   ),
