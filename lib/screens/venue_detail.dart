@@ -20,8 +20,10 @@ class VenueDetailPage extends StatefulWidget {
   // final String? price;
   final String? id;
   final void Function()? goToNotifications;
+  final void Function()? goToLogin;
 
-  const VenueDetailPage({Key? key, this.id, this.goToNotifications})
+  const VenueDetailPage(
+      {Key? key, this.id, this.goToNotifications, this.goToLogin})
       : super(key: key);
 
   @override
@@ -395,15 +397,18 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                 onPressed: () async {
                                   auth.User? user =
                                       auth.FirebaseAuth.instance.currentUser;
+                                  print(user);
                                   if (user == null) {
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            LoginPage(),
-                                      ),
-                                      (route) => false,
-                                    );
+                                    Navigator.pop(context);
+                                    widget.goToLogin!();
+                                    // Navigator.pushAndRemoveUntil(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (BuildContext context) =>
+                                    //         LoginPage(),
+                                    //   ),
+                                    //   (route) => false,
+                                    // );
                                   } else {
                                     await addRequest(
                                         user.uid,

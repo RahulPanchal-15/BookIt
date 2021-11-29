@@ -74,9 +74,9 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  void _next() {
-    Navigator.pushNamed(context, '/owner');
-  }
+  // void _next() {
+  //   Navigator.pushNamed(context, '/owner');
+  // }
 
   void _goToLogin() {
     Navigator.pushReplacementNamed(context, '/login');
@@ -92,7 +92,7 @@ class _MainScreenState extends State<MainScreen> {
     return {
       '/': (context) {
         return [
-          HomePage(onClick: _next, changeBottomTab: () => _goToTab(2)),
+          HomePage(changeBottomTab: () => _goToTab(2), goToLogin: _goToLogin),
           ProfilePage(
             changeBottomTab: () => _goToTab(0),
             onClick: _goToLogin,

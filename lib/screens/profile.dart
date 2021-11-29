@@ -169,7 +169,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     // Provider.of<MyAuth>(context, listen: false)
                                     //     .setUser(null);
                                     _auth.signOut();
-                                    widget.onClick!();
                                   } catch (err) {
                                     print("Error");
                                     print(err);

@@ -14,7 +14,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 class HomePage extends StatefulWidget {
   final void Function()? onClick;
   final void Function()? changeBottomTab;
-  const HomePage({Key? key, this.onClick, this.changeBottomTab})
+  final void Function()? goToLogin;
+  const HomePage({Key? key, this.onClick, this.changeBottomTab, this.goToLogin})
       : super(key: key);
 
   @override
@@ -252,8 +253,10 @@ class _HomePageState extends State<HomePage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => VenueDetailPage(
-                                    id: doc.id,
-                                    goToNotifications: widget.changeBottomTab),
+                                  id: doc.id,
+                                  goToNotifications: widget.changeBottomTab,
+                                  goToLogin: widget.goToLogin,
+                                ),
                               ),
                             );
                           },
