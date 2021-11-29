@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../widgets/request_card.dart';
 import '../widgets/owner_venue_on_request_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class BookingRequestPage extends StatefulWidget {
   const BookingRequestPage({Key? key}) : super(key: key);
@@ -10,9 +12,9 @@ class BookingRequestPage extends StatefulWidget {
 }
 
 class _BookingRequestPageState extends State<BookingRequestPage> {
-  final List<String> imagesList = [
-    "https://images.livemint.com/rf/Image-621x414/LiveMint/Period1/2015/09/12/Photos/turf-kHJF--621x414@LiveMint.jpg",
-  ];
+  auth.User? user = auth.FirebaseAuth.instance.currentUser;
+  final requestRef = FirebaseFirestore.instance.collection('requests');
+  CollectionReference venues = FirebaseFirestore.instance.collection('venues');
 
   @override
   Widget build(BuildContext context) {
@@ -90,13 +92,46 @@ class _BookingRequestPageState extends State<BookingRequestPage> {
                     const Divider(
                       thickness: 0,
                     ),
-                    Expanded(
-                        child: ListView.builder(
-                            itemCount: 2,
-                            padding: const EdgeInsets.only(top: 0.0),
-                            itemBuilder: (context, index) {
-                              return RequestCard("Rahul");
-                            }))
+                    StreamBuilder<QuerySnapshot>(
+                        stream: requestRef
+                            .where("ownerId", isEqualTo: user!.uid)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            print(snapshot.hasData);
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            print(snapshot);
+                            return ListView(
+                              shrinkWrap: true,
+                              children: snapshot.data!.docs.map((doc) {
+                                return RequestCard(
+                                  startTime: doc['startTime'],
+                                  endTime: doc['endTime'],
+                                  userId: doc['userId'],
+                                  status: doc['status'],
+                                  date: doc['date'],
+                                );
+                              }).toList(),
+                            );
+                          }
+                          // return ListView.builder(
+                          //     physics: NeverScrollableScrollPhysics(),
+                          //     shrinkWrap: true,
+                          //     itemCount: bottomCards.length,
+                          //     itemBuilder: (context, index) {
+                          //       return bottomCards[index];
+                          //     });
+                        }),
+                    //     Expanded(
+                    //         child: ListView.builder(
+                    //             itemCount: 2,
+                    //             padding: const EdgeInsets.only(top: 0.0),
+                    //             itemBuilder: (context, index) {
+                    //               return RequestCard("Rahul");
+                    //             }))
                   ],
                 ),
               ),

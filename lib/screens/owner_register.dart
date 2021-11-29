@@ -39,31 +39,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
   // final auth.FirebaseAuth firebaseAuth = auth.FirebaseAuth.instance!.currentUser();
   auth.User? user = auth.FirebaseAuth.instance.currentUser;
   CollectionReference venues = FirebaseFirestore.instance.collection('venues');
-
-  Future<void> addVenue() {
-    // Call the user's CollectionReference to add a new user
-    print(user!.uid);
-
-    return venues
-        .doc(user!.uid)
-        .set({
-          'name': data[0], // NMC Turf
-          'description': data[1],
-          'contact': data[2],
-          'work_email': data[3], // Stokes and Sons
-          'category': data[4],
-          'location': data[5],
-          'price': data[6],
-          'startTime': startTime.toString(),
-          'endTime': endTime.toString(),
-        })
-        .then((value) => print("Venue Added"))
-        .catchError((error) => print("Failed to add venue: $error"));
-  }
-
-  // auth.User? user = auth.FirebaseAuth.instance.currentUser;
-  CollectionReference venues = FirebaseFirestore.instance.collection('venues');
-  CollectionReference users = FirebaseFirestore.instance.collection('users');
+  CollectionReference users = FirebaseFirestore.instance.collection('venues');
 
   Future<void> addVenue(String id) {
     // Call the user's CollectionReference to add a new user
@@ -422,28 +398,6 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                       style: TextStyle(fontSize: 12)),
                                 ),
                               ),
-<<<<<<< HEAD
-                              onPressed: () async {
-                                // Provider.of<MyAuth>(context, listen: false)
-                                //     .setIsDone(true);
-                                // Navigator.pop(context);
-                                int i = 1;
-
-                                for (var img in venueImages) {
-                                  final ref = FirebaseStorage.instance
-                                      .ref()
-                                      .child('venue_images/${user!.uid}')
-                                      .child('${Path.basename(img!.path)}.jpg');
-                                  await ref.putFile(img);
-                                  print('Step1');
-                                  final url = await ref.getDownloadURL();
-                                  await addVenue();
-                                }
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const OwnerRegister(),
-=======
 
                               //Register Button
                               Center(
@@ -486,7 +440,6 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                       widget.goToHome!();
                                     },
                                     child: Text("Register"),
->>>>>>> 71262ca9d24d172cab4bd41388f5ab5c091f093d
                                   ),
                                 ),
                               ),

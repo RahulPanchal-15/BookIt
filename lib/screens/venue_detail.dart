@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 
 import '../screens/signup_login.dart';
 import '../utils/select_time.dart';
@@ -28,9 +31,9 @@ class VenueDetailPage extends StatefulWidget {
 class _VenueDetailPageState extends State<VenueDetailPage> {
   bool isPressed = false;
   String? search;
-  TimeOfDay? startTime;
-  TimeOfDay? endTime;
-  DateTime? nextDate;
+  TimeOfDay? rstartTime;
+  TimeOfDay? rendTime;
+  DateTime? rdate;
 
   auth.User? user = auth.FirebaseAuth.instance.currentUser;
 
@@ -52,15 +55,81 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
       IconData(57638, fontFamily: 'MaterialIcons');
   CollectionReference venues = FirebaseFirestore.instance.collection('venues');
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  CollectionReference requests = FirebaseFirestore.instance.collection('users');
+  CollectionReference requests =
+      FirebaseFirestore.instance.collection('requests');
 
-  Future<void> addRequest() {
-    return requests
-        .add({
-          'ownerId': widget.id,
-        })
-        .then((value) => print("Venue Added"))
-        .catchError((error) => print("Failed to add venue: $error"));
+  List<int> getHoursMins(String time) {
+    return [int.parse(time.split(":")[0]), int.parse(time.split(":")[1])];
+  }
+
+  int getSeconds(List<int> time) {
+    return (time[0] * 60) + time[1];
+  }
+
+  List<int> toTime(TimeOfDay time) {
+    return [time.hour, time.minute];
+  }
+
+  String formattedDate(DateTime date) {
+    return DateFormat('dd-MM-yyyy').format(date).replaceAll("-", "/");
+  }
+
+  Future<void> addRequest(
+      String userId, String startTimeS, String endTimeS) async {
+    // print(allRequests);
+
+    int vstartTime = getSeconds(getHoursMins(startTimeS));
+    int vendTime = getSeconds(getHoursMins(endTimeS));
+
+    int rstart = getSeconds(toTime(rstartTime!));
+    int rend = getSeconds(toTime(rendTime!));
+
+    bool slotBookedAlready = false;
+
+    // print(vstartTime);
+    // print(vendTime);
+    // print(rstart);
+    // print(rend);
+
+    if (rstart >= vstartTime && rend <= vendTime) {
+      QuerySnapshot allRequests = await requests
+          .where('ownerId', isEqualTo: widget.id)
+          .where('date', isEqualTo: formattedDate(rdate!))
+          .get();
+
+      print(allRequests.size);
+
+      allRequests.docs.forEach((element) {
+        int qstart = getSeconds(getHoursMins(element['startTime']));
+        int qend = getSeconds(getHoursMins(element['endTime']));
+        print(qstart);
+        print(qend);
+
+        if (rstart >= qstart && rend <= qend) {
+          print("Slot already booked!");
+          slotBookedAlready = true;
+        }
+      });
+
+      if (!slotBookedAlready) {
+        return requests
+            .add({
+              'ownerId': widget.id,
+              'userId': userId,
+              'date': formattedDate(rdate!),
+              'startTime': "${rstartTime!.hour}:${rstartTime!.minute}",
+              'endTime': "${rendTime!.hour}:${rendTime!.minute}",
+              'status': 2,
+            })
+            .then((value) => print("Request Added"))
+            .catchError((error) => print("Failed to add request: $error"));
+      }
+
+      return;
+    }
+
+    print("Slot out of range!");
+    return;
   }
 
   var kBoxDecoration = BoxDecoration(
@@ -207,12 +276,12 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                                               context,
                                                               DateTime.now());
                                                       setState(() {
-                                                        nextDate = date;
+                                                        rdate = date;
                                                       });
                                                     },
                                                     child: Text(
-                                                      nextDate != null
-                                                          ? "${nextDate!.day}/${nextDate!.month}/${nextDate!.year}"
+                                                      rdate != null
+                                                          ? "${rdate!.day}/${rdate!.month}/${rdate!.year}"
                                                           : "Choose Booking Date",
                                                       style: TextStyle(
                                                           color: Colors.purple),
@@ -251,13 +320,13 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                                       selectTime(context,
                                                           (time) {
                                                         setState(() {
-                                                          startTime = time;
+                                                          rstartTime = time;
                                                         });
-                                                      }, startTime);
+                                                      }, rstartTime);
                                                     },
                                                     child: Text(
-                                                      startTime != null
-                                                          ? "${startTime!.hour.toString()} : ${startTime!.minute.toString()}"
+                                                      rstartTime != null
+                                                          ? "${rstartTime!.hour.toString()} : ${rstartTime!.minute.toString()}"
                                                           : "Start",
                                                       style: TextStyle(
                                                           color: Colors.purple),
@@ -274,13 +343,13 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                                       selectTime(context,
                                                           (time) {
                                                         setState(() {
-                                                          endTime = time;
+                                                          rendTime = time;
                                                         });
-                                                      }, endTime);
+                                                      }, rendTime);
                                                     },
                                                     child: Text(
-                                                      endTime != null
-                                                          ? "${endTime!.hour.toString()} : ${endTime!.minute.toString()}"
+                                                      rendTime != null
+                                                          ? "${rendTime!.hour.toString()} : ${rendTime!.minute.toString()}"
                                                           : "End",
                                                       style: TextStyle(
                                                           color: Colors.purple),
@@ -336,8 +405,11 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                       (route) => false,
                                     );
                                   } else {
-                                    // await addRequest();
-
+                                    await addRequest(
+                                        user.uid,
+                                        snapshot.data!['startTime'],
+                                        snapshot.data!['endTime']);
+                                    print("Ended");
                                     Navigator.pop(context);
                                     widget.goToNotifications!();
                                   }
