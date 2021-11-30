@@ -401,14 +401,6 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                   if (user == null) {
                                     Navigator.pop(context);
                                     widget.goToLogin!();
-                                    // Navigator.pushAndRemoveUntil(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (BuildContext context) =>
-                                    //         LoginPage(),
-                                    //   ),
-                                    //   (route) => false,
-                                    // );
                                   } else {
                                     await addRequest(
                                         user.uid,

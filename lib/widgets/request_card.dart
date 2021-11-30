@@ -8,6 +8,7 @@ class RequestCard extends StatelessWidget {
   final String? date;
   final int? status;
   final String? userId;
+  final String? rId;
 
   const RequestCard(
       {Key? key,
@@ -15,11 +16,12 @@ class RequestCard extends StatelessWidget {
       this.endTime,
       this.date,
       this.userId,
+      this.rId,
       this.status})
       : super(key: key);
 
-  _makingPhoneCall(number) async {
-    const url = "tel:+91 9167979960";
+  _makingPhoneCall(String number) async {
+    var url = "tel:+91 $number";
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -27,46 +29,48 @@ class RequestCard extends StatelessWidget {
     }
   }
 
-  Future<String> getUserName(String userId) async {
-    DocumentSnapshot user =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    return user['name'];
-  }
+  // Future<String> getUserName(String userId) async {
+  //   DocumentSnapshot user =
+  //       await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  //   return user['name'];
+  // }
 
-  Future<String> getUserProfile(String userId) async {
-    DocumentSnapshot user =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    return user['profile'];
-  }
+  // Future<String> getUserProfile(String userId) async {
+  //   DocumentSnapshot user =
+  //       await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  //   return user['profile'];
+  // }
 
-  Future<String> getUserPhone(String userId) async {
-    DocumentSnapshot user =
-        await FirebaseFirestore.instance.collection('users').doc(userId).get();
-    return user['number'];
-  }
+  // Future<String> getUserPhone(String userId) async {
+  //   DocumentSnapshot user =
+  //       await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  //   return user['number'];
+  // }
 
   @override
   Widget build(BuildContext context) {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-    return StreamBuilder<Object>(
+    return StreamBuilder<DocumentSnapshot>(
         stream: users.doc(userId).snapshots(),
         builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return CircularProgressIndicator();
+          }
           return Card(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20)),
               child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                const ListTile(
+                ListTile(
                   leading: CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(
-                        "https://media.istockphoto.com/photos/learn-to-love-yourself-first-picture-id1291208214?b=1&k=20&m=1291208214&s=170667a&w=0&h=sAq9SonSuefj3d4WKy4KzJvUiLERXge9VgZO-oqKUOo="),
+                    backgroundImage: snapshot.data!['profile'] == ""
+                        ? AssetImage('images/aot.jfif') as ImageProvider
+                        : NetworkImage(snapshot.data!['profile']),
                   ),
-
-                  // Icon(Icons.person),
                   title: Text(
-                    'Rishabh Kothari',
-                    style: TextStyle(color: Colors.black),
+                    snapshot.data!['name'],
+                    style: const TextStyle(color: Colors.black),
                   ),
                   subtitle: Text('is requesting a booking for'),
                 ),
@@ -76,14 +80,14 @@ class RequestCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Row(
-                        children: const [
+                        children: [
                           Padding(
                             padding: EdgeInsets.only(right: 4),
                             child: Icon(Icons.calendar_today_rounded,
                                 color: Colors.purple, size: 20),
                           ),
                           Text(
-                            '22nd November',
+                            date!,
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -92,14 +96,14 @@ class RequestCard extends StatelessWidget {
                         ],
                       ),
                       Row(
-                        children: const [
+                        children: [
                           Padding(
                             padding: EdgeInsets.only(right: 2),
                             child: Icon(Icons.access_time_filled_sharp,
                                 color: Colors.purple),
                           ),
                           Text(
-                            '19:00 - 20:00',
+                            '$startTime - $endTime',
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -112,7 +116,9 @@ class RequestCard extends StatelessWidget {
                 ),
                 ButtonBar(alignment: MainAxisAlignment.spaceAround, children: [
                   TextButton(
-                      onPressed: _makingPhoneCall(userId),
+                      onPressed: () {
+                        _makingPhoneCall(snapshot.data!['number']);
+                      },
                       child: Row(children: const <Widget>[
                         Padding(
                           padding: EdgeInsets.fromLTRB(0, 0, 3, 0),
@@ -124,10 +130,20 @@ class RequestCard extends StatelessWidget {
                         Text('Call'),
                       ])),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      CollectionReference requests =
+                          FirebaseFirestore.instance.collection('requests');
+                      var request = await requests.doc(rId);
+                      print(request);
+
+                      request
+                          .update({'status': 1})
+                          .then((value) => print("Request Status Updated"))
+                          .catchError((error) =>
+                              print("Failed to update request status: $error"));
                       // Perform some action
                     },
-                    child: Row(children: const <Widget>[
+                    child: Row(children: <Widget>[
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 0, 3, 0),
                         child: Icon(
@@ -140,8 +156,18 @@ class RequestCard extends StatelessWidget {
                     ]),
                   ),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       // Perform some action
+                      CollectionReference requests =
+                          FirebaseFirestore.instance.collection('requests');
+                      var request = await requests.doc(rId);
+                      print(request);
+
+                      request
+                          .update({'status': 0})
+                          .then((value) => print("Request Status Updated"))
+                          .catchError((error) =>
+                              print("Failed to update request status: $error"));
                     },
                     child: Row(children: const <Widget>[
                       Padding(
