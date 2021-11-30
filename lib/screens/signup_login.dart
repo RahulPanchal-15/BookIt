@@ -345,6 +345,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+      resizeToAvoidBottomInset: false,
     );
   }
 }

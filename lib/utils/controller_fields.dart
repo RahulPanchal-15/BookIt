@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 
 class OwnerFields {
   List<String> data = [
-    "Venue Name *",
-    'Description',
-    "Contact *",
-    'Work Email(if any)',
-    "Location *",
-    "Price *",
+    "Venue Name*",
+    'Description*',
+    "Contact*",
+    'Work Email',
+    "Location*",
+    "Price* (Example: 2000/hr)",
   ];
 
   List<TextEditingController> generateControllers() {

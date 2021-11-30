@@ -1,3 +1,4 @@
+import 'package:assignment_practice/widgets/error_msg.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -16,6 +17,7 @@ import '../utils/pick_image.dart';
 import '../utils/select_time.dart';
 import '../services/auth_service.dart';
 import '../models/user_model.dart';
+import '../utils/validation.dart';
 
 OwnerFields fields = OwnerFields();
 final data = fields.data;
@@ -40,6 +42,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
   auth.User? user = auth.FirebaseAuth.instance.currentUser;
   CollectionReference venues = FirebaseFirestore.instance.collection('venues');
   CollectionReference users = FirebaseFirestore.instance.collection('venues');
+  String error = "";
 
   Future<void> addVenue(String id) {
     // Call the user's CollectionReference to add a new user
@@ -60,8 +63,8 @@ class _OwnerRegisterState extends State<OwnerRegister> {
           'startTime':
               startTime!.hour.toString() + ":" + startTime!.hour.toString(),
           'endTime': endTime!.hour.toString() + ":" + endTime!.hour.toString(),
+          'venues': venueUrls,
           'createdOn': FieldValue.serverTimestamp(),
-          'venues': venueUrls
         })
         .then((value) => print("Venue Added"))
         .catchError((error) => print("Failed to add venue: $error"));
@@ -398,13 +401,21 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                       style: TextStyle(fontSize: 12)),
                                 ),
                               ),
-
+                              error != ""
+                                  ? Center(
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 8.0),
+                                        child: ErrorMsg(msg: error),
+                                      ),
+                                    )
+                                  : Container(),
                               //Register Button
                               Center(
                                 child: Container(
-                                  margin: EdgeInsets.only(top: 40.0),
+                                  margin: EdgeInsets.only(top: 10.0),
                                   padding: EdgeInsets.symmetric(
-                                      vertical: 0, horizontal: 20.0),
+                                      vertical: 0, horizontal: 10.0),
                                   child: ElevatedButton(
                                     style: kButtonStyle.copyWith(
                                       backgroundColor:
@@ -422,22 +433,41 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                       //     .setIsDone(true);
                                       // Navigator.pop(context);
 
-                                      for (var img in venueImages) {
-                                        final ref = FirebaseStorage.instance
-                                            .ref()
-                                            .child('venue_images/${user.uid}')
-                                            .child(
-                                                '${Path.basename(img!.path)}');
-                                        await ref.putFile(img);
-                                        print('Step1');
-                                        final url = await ref.getDownloadURL();
-                                        venueUrls.add(url);
+                                      String valid =
+                                          Validation.validateRegisterVenue(
+                                              controllers[0].text,
+                                              controllers[1].text,
+                                              controllers[2].text,
+                                              controllers[3].text,
+                                              controllers[4].text,
+                                              controllers[5].text,
+                                              startTime,
+                                              endTime,
+                                              venueUrls);
+
+                                      if (valid == "") {
+                                        for (var img in venueImages) {
+                                          final ref = FirebaseStorage.instance
+                                              .ref()
+                                              .child('venue_images/${user.uid}')
+                                              .child(
+                                                  '${Path.basename(img!.path)}');
+                                          await ref.putFile(img);
+                                          print('Step1');
+                                          final url =
+                                              await ref.getDownloadURL();
+                                          venueUrls.add(url);
+                                        }
+                                        print(venueUrls);
+                                        await addVenue(user.uid);
+                                        await updateIsOwner(user.uid);
+                                        Navigator.pop(context);
+                                        widget.goToHome!();
+                                      } else {
+                                        setState(() {
+                                          error = valid;
+                                        });
                                       }
-                                      print(venueUrls);
-                                      await addVenue(user.uid);
-                                      await updateIsOwner(user.uid);
-                                      Navigator.pop(context);
-                                      widget.goToHome!();
                                     },
                                     child: Text("Register"),
                                   ),
@@ -452,6 +482,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                 ),
               ),
             ),
+            resizeToAvoidBottomInset: false,
           );
   }
 }

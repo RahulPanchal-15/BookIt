@@ -53,22 +53,21 @@ class _UserBookingsState extends State<UserBookings> {
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return CircularProgressIndicator();
-                        } else if (snapshot.data!.docs.length ==
-                                          0) {
-                                        return Column(
-                                          children: [
-                                            Icon(Icons.info_outline,
-                                                color: Colors.white, size: 40),
-                                            Text(
-                                              "No Booking Requests",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          ],
-                                        );
-                                      } 
+                        } else if (snapshot.data!.docs.length == 0) {
+                          return Column(
+                            children: [
+                              Icon(Icons.info_outline,
+                                  color: Colors.white, size: 40),
+                              Text(
+                                "No Bookings Requested",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ],
+                          );
+                        }
                         return Container(
                             margin: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                             child: ListView(

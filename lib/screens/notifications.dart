@@ -7,7 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class Notifications extends StatefulWidget {
-  const Notifications({Key? key}) : super(key: key);
+  final void Function()? redirect;
+  const Notifications({Key? key, this.redirect}) : super(key: key);
 
   @override
   _NotificationsState createState() => _NotificationsState();
@@ -18,11 +19,55 @@ class _NotificationsState extends State<Notifications> {
   final userRef = FirebaseFirestore.instance.collection('users');
   @override
   int selectedIndex = 0;
-  List<String>? labels = ["My Bookings"];
+  // List<String>? labels = ["My Bookings"];
   Widget build(BuildContext context) {
     return user == null
-        ? Container(
-            child: Text("Login"),
+        ? SafeArea(
+            child: Scaffold(
+              body: Center(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.purple.shade800,
+                          // Colors.purple.shade600,
+                          Colors.purple.shade400,
+                          Colors.purple.shade200,
+                          // Colors.purple.shade100,
+                          Colors.deepPurpleAccent,
+                        ]),
+                  ),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Login to proceed",
+                        style: TextStyle(color: Colors.white, fontSize: 22),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24))),
+                            onPressed: () {
+                              widget.redirect!();
+                            },
+                            child: Text(
+                              "Login",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            )),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
           )
         : StreamBuilder<DocumentSnapshot>(
             stream: userRef.doc(user!.uid).snapshots(),
@@ -32,12 +77,9 @@ class _NotificationsState extends State<Notifications> {
               }
 
               bool? isOwner = snapshot.data!['isOwner'];
-              if (isOwner!) {
-                labels!.add('Incoming Requests');
-              }
               return DefaultTabController(
                 initialIndex: 0,
-                length: labels!.length,
+                length: 2,
                 child: Scaffold(
                   appBar: AppBar(
                     backgroundColor: Colors.purple,
@@ -46,20 +88,64 @@ class _NotificationsState extends State<Notifications> {
                       indicatorColor: Colors.white,
                       tabs: <Widget>[
                         Tab(
-                          text: labels![0],
+                          text: "My Bookings",
                         ),
-                        isOwner
-                            ? Tab(
-                                text: labels![1],
-                              )
-                            : Container()
+                        Tab(
+                          text: "Incoming Requests",
+                        )
                       ],
                     ),
                   ),
                   body: TabBarView(
                     children: <Widget>[
                       UserBookings(),
-                      isOwner ? BookingRequestPage() : Container(),
+                      isOwner == null
+                          ? Container()
+                          : isOwner
+                              ? BookingRequestPage()
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                        colors: [
+                                          Colors.purple.shade800,
+                                          // Colors.purple.shade600,
+                                          Colors.purple.shade400,
+                                          Colors.purple.shade200,
+                                          // Colors.purple.shade100,
+                                          Colors.deepPurpleAccent,
+                                        ]),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Are you a Venue Owner?",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 22),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(4.0),
+                                        child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            24))),
+                                            onPressed: () {
+                                              widget.redirect!();
+                                            },
+                                            child: Text(
+                                              "Register Venue",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18),
+                                            )),
+                                      )
+                                    ],
+                                  ),
+                                ),
                     ],
                   ),
                 ),

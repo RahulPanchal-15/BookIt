@@ -88,6 +88,10 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _goToOwnerRegister() {
+    Navigator.pushReplacementNamed(context, '/owner');
+  }
+
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context, int index) {
     return {
       '/': (context) {
@@ -97,7 +101,7 @@ class _MainScreenState extends State<MainScreen> {
             changeBottomTab: () => _goToTab(0),
             onClick: _goToLogin,
           ),
-          Notifications(),
+          Notifications(redirect: _goToOwnerRegister),
           // VenueDetailPage(),
         ].elementAt(index);
       },

@@ -87,6 +87,7 @@ class _HomePageState extends State<HomePage> {
                 horizontal: 10.0,
               ),
               child: TextField(
+                autofocus: false,
                 textAlignVertical: TextAlignVertical.center,
                 onChanged: (value) {
                   setState(() {
@@ -133,7 +134,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-
             //Middle Container Card
 
             // Container(
@@ -233,6 +233,23 @@ class _HomePageState extends State<HomePage> {
                     print(snapshot.hasData);
                     return Center(
                       child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.data!.docs.length == 0) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 150.0),
+                      child: Column(
+                        children: [
+                          Icon(Icons.info_outline,
+                              color: Colors.black, size: 40),
+                          Text(
+                            "No Results Found",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   } else {
                     print(snapshot);

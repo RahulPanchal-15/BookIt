@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
-
+import "../widgets/error_msg.dart";
 import '../screens/signup_login.dart';
 import '../utils/select_time.dart';
 import '../constants.dart';
@@ -38,10 +38,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
   DateTime? rdate;
 
   auth.User? user = auth.FirebaseAuth.instance.currentUser;
-
-  final List<String> imagesList = [
-    "https://images.livemint.com/rf/Image-621x414/LiveMint/Period1/2015/09/12/Photos/turf-kHJF--621x414@LiveMint.jpg",
-  ];
+  String error = "";
 
   static const IconData location_pin =
       IconData(58284, fontFamily: 'MaterialIcons');
@@ -76,7 +73,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
     return DateFormat('dd-MM-yyyy').format(date).replaceAll("-", "/");
   }
 
-  Future<void> addRequest(
+  Future<bool> addRequest(
       String userId, String startTimeS, String endTimeS) async {
     // print(allRequests);
 
@@ -114,7 +111,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
       });
 
       if (!slotBookedAlready) {
-        return requests
+        requests
             .add({
               'ownerId': widget.id,
               'userId': userId,
@@ -125,13 +122,14 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
             })
             .then((value) => print("Request Added"))
             .catchError((error) => print("Failed to add request: $error"));
+        return true;
       }
 
-      return;
+      return false;
     }
 
     print("Slot out of range!");
-    return;
+    return false;
   }
 
   var kBoxDecoration = BoxDecoration(
@@ -370,6 +368,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                             ),
                             alignment: Alignment.centerLeft,
                           ),
+                          error == "" ? Container() : ErrorMsg(msg: error),
                           Container(
                             margin: EdgeInsets.symmetric(vertical: 10),
                             child: SizedBox(
@@ -402,13 +401,20 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                     Navigator.pop(context);
                                     widget.goToLogin!();
                                   } else {
-                                    await addRequest(
+                                    bool success = await addRequest(
                                         user.uid,
                                         snapshot.data!['startTime'],
                                         snapshot.data!['endTime']);
-                                    print("Ended");
-                                    Navigator.pop(context);
-                                    widget.goToNotifications!();
+                                    // print("Ended");
+                                    if (success) {
+                                      Navigator.pop(context);
+                                      widget.goToNotifications!();
+                                    } else {
+                                      print('SLOT BOOKED');
+                                      setState(() {
+                                        error = "Slot Unavailable!";
+                                      });
+                                    }
                                   }
                                 },
                               ),
@@ -419,12 +425,6 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                     ),
                   ),
                   resizeToAvoidBottomInset: false,
-                  // floatingActionButton: FloatingActionButton.extended(
-                  //     onPressed: () {},
-                  //     backgroundColor: Colors.white,
-                  //     foregroundColor: Colors.purple,
-                  //     icon: const Icon(Icons.book, size: 20.0),
-                  //     label: const Text("Book Now"))),
                 ));
           }),
     );
