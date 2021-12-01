@@ -3,6 +3,7 @@ import 'package:assignment_practice/constants.dart';
 import 'package:assignment_practice/screens/faq.dart';
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/signup_login.dart';
+import 'package:assignment_practice/widgets/redirect.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -33,17 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
     auth.User? user = auth.FirebaseAuth.instance.currentUser;
 
     return user == null
-        ? Center(
-            child: ElevatedButton(
-            style: ButtonStyle(
-              foregroundColor: MaterialStateProperty.all(Colors.purple),
-              backgroundColor: MaterialStateProperty.all(Colors.white),
-            ),
-            onPressed: () {
-              widget.onClick!();
-            },
-            child: Text("Please Login First"),
-          ))
+        ? SafeArea(child: LoginRedirect(callBack: widget.onClick!))
         : SafeArea(
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),

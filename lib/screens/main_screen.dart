@@ -104,7 +104,7 @@ class _MainScreenState extends State<MainScreen> {
             changeBottomTab: () => _goToTab(0),
             onClick: _goToLogin,
           ),
-          Notifications(redirect: _goToOwnerRegister),
+          Notifications(redirect: _goToOwnerRegister, goToLogin: _goToLogin),
           // VenueDetailPage(),
         ].elementAt(index);
       },

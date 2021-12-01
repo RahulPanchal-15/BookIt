@@ -1,4 +1,5 @@
 import 'package:assignment_practice/constants.dart';
+import 'package:assignment_practice/widgets/no_data.dart';
 import 'package:flutter/material.dart';
 import '../widgets/request_card.dart';
 import '../widgets/owner_venue_on_request_page.dart';
@@ -43,15 +44,14 @@ class _BookingRequestPageState extends State<BookingRequestPage> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                        child: OwnerVenueCard(
+                                    OwnerVenueCard(
                                       image:
                                           snapshot.data!['venues'].length == 0
                                               ? AssetImage('images/aot.jfif')
                                                   as ImageProvider
                                               : NetworkImage(
                                                   snapshot.data!['venues'][0]),
-                                    )),
+                                    ),
                                   ],
                                 ),
                                 Padding(
@@ -88,19 +88,9 @@ class _BookingRequestPageState extends State<BookingRequestPage> {
                                         );
                                       } else if (snapshot.data!.docs.length ==
                                           0) {
-                                        return Column(
-                                          children: [
-                                            Icon(Icons.info_outline,
-                                                color: Colors.white, size: 40),
-                                            Text(
-                                              "No Booking Requests",
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 20,
-                                              ),
-                                            ),
-                                          ],
-                                        );
+                                        return kNoData(
+                                            text: "No Incoming Requests",
+                                            color: Colors.white);
                                       } else {
                                         print(snapshot.data!.docs);
                                         return ListView(

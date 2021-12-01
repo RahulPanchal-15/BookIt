@@ -24,7 +24,8 @@ class OwnerVenueCard extends StatelessWidget {
       child: Row(
         children: [
           Image(
-            height: 100,
+            height: 150,
+            width: 300,
             fit: BoxFit.cover,
             image: image!,
           ),

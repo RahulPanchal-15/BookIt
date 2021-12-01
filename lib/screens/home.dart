@@ -56,18 +56,21 @@ class _HomePageState extends State<HomePage> {
                           TextSpan(
                             text: 'Why Wait ',
                             style: TextStyle(
+                              fontSize: 16,
                               color: Colors.black,
                             ),
                           ),
                           TextSpan(
                             text: 'Book it',
                             style: TextStyle(
+                              fontSize: 16,
                               color: Colors.purple,
                             ),
                           ),
                           TextSpan(
                             text: ' Now!',
                             style: TextStyle(
+                              fontSize: 16,
                               color: Colors.black,
                             ),
                           ),
@@ -301,26 +304,29 @@ class _HomePageState extends State<HomePage> {
                       shrinkWrap: true,
                       children: snapshot.data!.docs.map((doc) {
                         print(doc['name']);
-                        return HomeBottomCard(
-                          name: doc['name'],
-                          location: doc['location'],
-                          price: doc['price'],
-                          image: doc['venues'].isEmpty
-                              ? AssetImage('images/aot.jfif') as ImageProvider
-                              : NetworkImage(doc['venues'][0]),
-                          filterName: doc['category'],
-                          onClick: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => VenueDetailPage(
-                                  id: doc.id,
-                                  goToNotifications: widget.changeBottomTab,
-                                  goToLogin: widget.goToLogin,
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          child: HomeBottomCard(
+                            name: doc['name'],
+                            location: doc['location'],
+                            price: doc['price'],
+                            image: doc['venues'].isEmpty
+                                ? AssetImage('images/aot.jfif') as ImageProvider
+                                : NetworkImage(doc['venues'][0]),
+                            filterName: doc['category'],
+                            onClick: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => VenueDetailPage(
+                                    id: doc.id,
+                                    goToNotifications: widget.changeBottomTab,
+                                    goToLogin: widget.goToLogin,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         );
                       }).toList(),
                     );

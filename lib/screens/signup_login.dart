@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
           'email': email, // Stokes and Sons
           'number': mobileNumber,
           'profile': url.isEmpty ? "" : url,
-          'favourites': ["123", "324"],
+          'favourites': [],
           'isOwner': false,
         })
         .then((value) => print("User Added"))

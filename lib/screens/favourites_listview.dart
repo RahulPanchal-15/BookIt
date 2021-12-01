@@ -1,4 +1,5 @@
 import 'package:assignment_practice/screens/venue_detail.dart';
+import 'package:assignment_practice/widgets/no_data.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import 'package:get/get.dart';
@@ -23,48 +24,7 @@ class _FavouritesState extends State<Favourites> {
   auth.User? user = auth.FirebaseAuth.instance.currentUser;
   CollectionReference venues = FirebaseFirestore.instance.collection('venues');
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  // List bottomCards = [
-  //   HomeBottomCard(
-  //     name: "Venue Name",
-  //     location: "Mumbai",
-  //     price: "2K/hr",
-  //     image: AssetImage('images/check.jpg'),
-  //     filterName: "Turf",
-  //     onClick: () {
-  //       print("Filter Name Success!!!");
-  //     },
-  //   ),
-  //   HomeBottomCard(
-  //     name: "AOT",
-  //     location: "Chennai",
-  //     price: "4K/hr",
-  //     image: AssetImage('images/aot.jfif'),
-  //     filterName: "Banquet",
-  //     onClick: () {
-  //       print("Filter Name Success!!!");
-  //     },
-  //   ),
-  //   HomeBottomCard(
-  //     name: "Yea",
-  //     location: "Mumbai",
-  //     price: "2K/hr",
-  //     image: AssetImage('images/check.jpg'),
-  //     filterName: "Turf",
-  //     onClick: () {
-  //       print("Filter Name Success!!!");
-  //     },
-  //   ),
-  //   HomeBottomCard(
-  //     name: "Venue name",
-  //     location: "Mumbai",
-  //     price: "2K/hr",
-  //     image: AssetImage('images/check.jpg'),
-  //     filterName: "Turf",
-  //     onClick: () {
-  //       print("Filter Name Success!!!");
-  //     },
-  //   ),
-  // ];
+
   Widget build(BuildContext context) {
     return user == null
         ? Container(child: Text("Please Login"))
@@ -92,15 +52,21 @@ class _FavouritesState extends State<Favourites> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               "My Favourites",
-                              style: TextStyle(fontSize: 20),
+                              style:
+                                  TextStyle(fontSize: 28, color: Colors.purple),
                             ),
                             SizedBox(
                               width: 10,
                             ),
-                            Icon(Icons.favorite),
+                            Icon(
+                              Icons.favorite,
+                              size: 36,
+                              color: Colors.purple,
+                            ),
                           ],
                         ),
                       ),
@@ -109,6 +75,14 @@ class _FavouritesState extends State<Favourites> {
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) {
                               return CircularProgressIndicator();
+                            } else if (snapshot.data!['favourites'].length ==
+                                0) {
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 170.0),
+                                child: kNoData(
+                                    text: "No Favourites Yet",
+                                    color: Colors.purple),
+                              );
                             }
                             return ListView(
                               shrinkWrap: true,

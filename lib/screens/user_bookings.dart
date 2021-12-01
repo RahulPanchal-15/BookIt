@@ -1,3 +1,4 @@
+import 'package:assignment_practice/widgets/no_data.dart';
 import 'package:assignment_practice/widgets/status_card.dart';
 import 'package:flutter/material.dart';
 import '../widgets/request_card.dart';
@@ -44,18 +45,11 @@ class _UserBookingsState extends State<UserBookings> {
                         if (!snapshot.hasData) {
                           return CircularProgressIndicator();
                         } else if (snapshot.data!.docs.length == 0) {
-                          return Column(
-                            children: [
-                              Icon(Icons.info_outline,
-                                  color: Colors.white, size: 40),
-                              Text(
-                                "No Bookings Requested",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ],
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 170.0),
+                            child: kNoData(
+                                text: "No Bookings Requested",
+                                color: Colors.white),
                           );
                         }
                         return Container(

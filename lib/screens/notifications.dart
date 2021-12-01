@@ -1,6 +1,7 @@
 import 'package:assignment_practice/constants.dart';
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/user_bookings.dart';
+import 'package:assignment_practice/widgets/redirect.dart';
 import 'package:assignment_practice/widgets/status_card.dart';
 import 'package:flutter/material.dart';
 import '../widgets/toggle_switch.dart';
@@ -9,7 +10,9 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class Notifications extends StatefulWidget {
   final void Function()? redirect;
-  const Notifications({Key? key, this.redirect}) : super(key: key);
+  final void Function()? goToLogin;
+  const Notifications({Key? key, this.redirect, this.goToLogin})
+      : super(key: key);
 
   @override
   _NotificationsState createState() => _NotificationsState();
@@ -24,39 +27,7 @@ class _NotificationsState extends State<Notifications> {
   Widget build(BuildContext context) {
     return user == null
         ? SafeArea(
-            child: Scaffold(
-              body: Center(
-                child: Container(
-                  decoration: kBoxGradient,
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Login to proceed",
-                        style: TextStyle(color: Colors.white, fontSize: 22),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24))),
-                            onPressed: () {
-                              widget.redirect!();
-                            },
-                            child: Text(
-                              "Login",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18),
-                            )),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            child: LoginRedirect(callBack: widget.goToLogin!),
           )
         : StreamBuilder<DocumentSnapshot>(
             stream: userRef.doc(user!.uid).snapshots(),
