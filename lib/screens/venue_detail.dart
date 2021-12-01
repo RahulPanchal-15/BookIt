@@ -85,11 +85,6 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
 
     bool slotBookedAlready = false;
 
-    // print(vstartTime);
-    // print(vendTime);
-    // print(rstart);
-    // print(rend);
-
     if (rstart >= vstartTime && rend <= vendTime) {
       QuerySnapshot allRequests = await requests
           .where('ownerId', isEqualTo: widget.id)
@@ -143,290 +138,352 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: StreamBuilder<DocumentSnapshot?>(
-          stream: FirebaseFirestore.instance
-              .collection('venues')
-              .doc(widget.id)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return Container(
-                decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.white, Colors.white])),
-                child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  // appBar: ,
-                  body: Container(
-                    margin: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10)),
-                            margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                            child: CarouselSlider(
-                                items: snapshot.data!['venues']
-                                    .map<Widget>((e) => ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          child: Stack(
-                                            fit: StackFit.expand,
-                                            children: <Widget>[
-                                              Image.network(e,
-                                                  width: 1000,
-                                                  height: 200,
-                                                  fit: BoxFit.cover)
-                                            ],
+      child: Scaffold(
+        appBar: AppBar(
+          iconTheme: IconThemeData(
+            color: Colors.black, //change your color here
+          ),
+          automaticallyImplyLeading: true,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.purple,
+          toolbarHeight: 30,
+          shadowColor: Colors.white,
+          elevation: 0,
+        ),
+        body: StreamBuilder<DocumentSnapshot?>(
+            stream: FirebaseFirestore.instance
+                .collection('venues')
+                .doc(widget.id)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return Container(
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.white, Colors.white])),
+                  child: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    // appBar: ,
+                    body: Container(
+                      margin: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10)),
+                              margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                              child: CarouselSlider(
+                                  items: snapshot.data!['venues']
+                                      .map<Widget>((e) => ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            child: Stack(
+                                              fit: StackFit.expand,
+                                              children: <Widget>[
+                                                Image.network(e,
+                                                    width: 1000,
+                                                    height: 200,
+                                                    fit: BoxFit.cover)
+                                              ],
+                                            ),
+                                          ))
+                                      .toList(),
+                                  options: CarouselOptions(
+                                      enlargeCenterPage: true,
+                                      enableInfiniteScroll: true)),
+                            ),
+                            const Divider(),
+                            Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      snapshot.data!['name'],
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        color: Colors.purple,
+                                      ),
+                                    ),
+                                  ),
+                                  StreamBuilder<DocumentSnapshot>(
+                                      stream: users.doc(user!.uid).snapshots(),
+                                      builder: (context, snapshot) {
+                                        if (!snapshot.hasData) {
+                                          return CircularProgressIndicator();
+                                        }
+                                        print(snapshot.data!['favourites']);
+                                        bool exists = snapshot
+                                                    .data!['favourites']
+                                                    .length ==
+                                                0
+                                            ? false
+                                            : true;
+                                        print(exists);
+                                        bool contains = false;
+                                        if (exists) {
+                                          contains = snapshot
+                                              .data!['favourites']
+                                              .contains(widget.id);
+                                        }
+                                        print(contains);
+                                        return GestureDetector(
+                                          onTap: () {
+                                            if (user == null) {
+                                              widget.goToLogin!();
+                                            } else {
+                                              List<dynamic> updated =
+                                                  snapshot.data!['favourites'];
+                                              if (contains) {
+                                                updated.remove(widget.id);
+                                                print(updated);
+                                                users.doc(user!.uid).update(
+                                                    {'favourites': updated});
+                                                print(
+                                                    "Removed from Favourites");
+                                              } else {
+                                                print(updated);
+                                                updated.add(widget.id!);
+                                                users.doc(user!.uid).update(
+                                                    {'favourites': updated});
+                                                print("Added to Favourites");
+                                              }
+                                            }
+                                          },
+                                          child: Icon(
+                                            contains
+                                                ? CupertinoIcons.heart_fill
+                                                : Icons.favorite_outline,
+                                            color: contains
+                                                ? Colors.redAccent[700]
+                                                : Colors.black,
+                                            size: 28.0,
+                                            semanticLabel:
+                                                'Text to announce in accessibility modes',
                                           ),
-                                        ))
-                                    .toList(),
-                                options: CarouselOptions(
-                                    enlargeCenterPage: true,
-                                    enableInfiniteScroll: true)),
-                          ),
-                          const Divider(),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
+                                        );
+                                      })
+                                ]),
+                            const Divider(),
+                            VenueDetailTile(
+                                iconName: Icons.location_pin,
+                                title: snapshot.data!['location']),
+                            VenueDetailTile(
+                                iconName: article_rounded,
+                                title: snapshot.data!['description'] ??
+                                    "A wholesame turf for football lovers in the heart of Navi Mumbai."),
+                            VenueDetailTile(
+                                iconName: monetization_rounded,
+                                title: snapshot.data!['price']),
+                            VenueDetailTile(
+                                iconName: Icons.event_available,
+                                title:
+                                    "Availability: ${snapshot.data!['startTime']} - ${snapshot.data!['endTime']}"),
+                            const Divider(
+                              thickness: 0,
+                            ),
+                            Align(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Select Date:",
+                                          style: TextStyle(
+                                              color: Colors.purple,
+                                              fontSize: 16),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 25),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(Icons.date_range),
+                                                    TextButton(
+                                                      onPressed: () async {
+                                                        var date =
+                                                            await selectDate(
+                                                                context,
+                                                                DateTime.now());
+                                                        setState(() {
+                                                          rdate = date;
+                                                        });
+                                                      },
+                                                      child: Text(
+                                                        rdate != null
+                                                            ? "${rdate!.day}/${rdate!.month}/${rdate!.year}"
+                                                            : "Choose Booking Date",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.purple),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Select Slot:",
+                                          style: TextStyle(
+                                              color: Colors.purple,
+                                              fontSize: 16),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 30),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(Icons.schedule),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        selectTime(context,
+                                                            (time) {
+                                                          setState(() {
+                                                            rstartTime = time;
+                                                          });
+                                                        }, rstartTime);
+                                                      },
+                                                      child: Text(
+                                                        rstartTime != null
+                                                            ? "${rstartTime!.hour.toString()} : ${rstartTime!.minute.toString()}"
+                                                            : "Start",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.purple),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text("TO"),
+                                                Row(
+                                                  children: [
+                                                    Icon(Icons
+                                                        .schedule_outlined),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        selectTime(context,
+                                                            (time) {
+                                                          setState(() {
+                                                            rendTime = time;
+                                                          });
+                                                        }, rendTime);
+                                                      },
+                                                      child: Text(
+                                                        rendTime != null
+                                                            ? "${rendTime!.hour.toString()} : ${rendTime!.minute.toString()}"
+                                                            : "End",
+                                                        style: TextStyle(
+                                                            color:
+                                                                Colors.purple),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              alignment: Alignment.centerLeft,
+                            ),
+                            error == "" ? Container() : ErrorMsg(msg: error),
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              child: SizedBox(
+                                height: 40,
+                                width: 150,
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all(
+                                        Colors.purple),
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(18.0),
+                                      ),
+                                    ),
+                                  ),
                                   child: Text(
-                                    snapshot.data!['name'],
+                                    //if setFlag=1 , then Available
+                                    "Book",
                                     style: TextStyle(
-                                      fontSize: 24,
-                                      color: Colors.purple,
+                                      color: Colors.white,
+                                      fontSize: 20.0,
                                     ),
                                   ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isPressed = !isPressed;
-                                    });
-                                  },
-                                  child: Icon(
-                                    isPressed
-                                        ? CupertinoIcons.heart_fill
-                                        : Icons.favorite_outline,
-                                    color: isPressed
-                                        ? Colors.redAccent[700]
-                                        : Colors.black,
-                                    size: 28.0,
-                                    semanticLabel:
-                                        'Text to announce in accessibility modes',
-                                  ),
-                                )
-                              ]),
-                          const Divider(),
-                          VenueDetailTile(
-                              iconName: location_pin,
-                              title: snapshot.data!['location']),
-                          VenueDetailTile(
-                              iconName: article_rounded,
-                              title: snapshot.data!['description'] ??
-                                  "A wholesame turf for football lovers in the heart of Navi Mumbai."),
-                          VenueDetailTile(
-                              iconName: monetization_rounded,
-                              title: snapshot.data!['price']),
-                          VenueDetailTile(
-                              iconName: Icons.event_available,
-                              title:
-                                  "Availability: ${snapshot.data!['startTime']} - ${snapshot.data!['endTime']}"),
-                          const Divider(
-                            thickness: 0,
-                          ),
-                          Align(
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Select Date:",
-                                        style: TextStyle(
-                                            color: Colors.purple, fontSize: 16),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 25),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.date_range),
-                                                  TextButton(
-                                                    onPressed: () async {
-                                                      var date =
-                                                          await selectDate(
-                                                              context,
-                                                              DateTime.now());
-                                                      setState(() {
-                                                        rdate = date;
-                                                      });
-                                                    },
-                                                    child: Text(
-                                                      rdate != null
-                                                          ? "${rdate!.day}/${rdate!.month}/${rdate!.year}"
-                                                          : "Choose Booking Date",
-                                                      style: TextStyle(
-                                                          color: Colors.purple),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        "Select Slot:",
-                                        style: TextStyle(
-                                            color: Colors.purple, fontSize: 16),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 30),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.schedule),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      selectTime(context,
-                                                          (time) {
-                                                        setState(() {
-                                                          rstartTime = time;
-                                                        });
-                                                      }, rstartTime);
-                                                    },
-                                                    child: Text(
-                                                      rstartTime != null
-                                                          ? "${rstartTime!.hour.toString()} : ${rstartTime!.minute.toString()}"
-                                                          : "Start",
-                                                      style: TextStyle(
-                                                          color: Colors.purple),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Text("TO"),
-                                              Row(
-                                                children: [
-                                                  Icon(Icons.schedule_outlined),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      selectTime(context,
-                                                          (time) {
-                                                        setState(() {
-                                                          rendTime = time;
-                                                        });
-                                                      }, rendTime);
-                                                    },
-                                                    child: Text(
-                                                      rendTime != null
-                                                          ? "${rendTime!.hour.toString()} : ${rendTime!.minute.toString()}"
-                                                          : "End",
-                                                      style: TextStyle(
-                                                          color: Colors.purple),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            alignment: Alignment.centerLeft,
-                          ),
-                          error == "" ? Container() : ErrorMsg(msg: error),
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            child: SizedBox(
-                              height: 40,
-                              width: 150,
-                              child: ElevatedButton(
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all(Colors.purple),
-                                  shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                    RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(18.0),
-                                    ),
-                                  ),
-                                ),
-                                child: Text(
-                                  //if setFlag=1 , then Available
-                                  "Book",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20.0,
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  auth.User? user =
-                                      auth.FirebaseAuth.instance.currentUser;
-                                  print(user);
-                                  if (user == null) {
-                                    Navigator.pop(context);
-                                    widget.goToLogin!();
-                                  } else {
-                                    bool success = await addRequest(
-                                        user.uid,
-                                        snapshot.data!['startTime'],
-                                        snapshot.data!['endTime']);
-                                    // print("Ended");
-                                    if (success) {
+                                  onPressed: () async {
+                                    auth.User? user =
+                                        auth.FirebaseAuth.instance.currentUser;
+                                    print(user);
+                                    if (user == null) {
                                       Navigator.pop(context);
-                                      widget.goToNotifications!();
+                                      widget.goToLogin!();
                                     } else {
-                                      print('SLOT BOOKED');
-                                      setState(() {
-                                        error = "Slot Unavailable!";
-                                      });
+                                      bool success = await addRequest(
+                                          user.uid,
+                                          snapshot.data!['startTime'],
+                                          snapshot.data!['endTime']);
+                                      // print("Ended");
+                                      if (success) {
+                                        Navigator.pop(context);
+                                        widget.goToNotifications!();
+                                      } else {
+                                        print('SLOT BOOKED');
+                                        setState(() {
+                                          error = "Slot Unavailable!";
+                                        });
+                                      }
                                     }
-                                  }
-                                },
+                                  },
+                                ),
                               ),
-                            ),
-                          )
-                        ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  resizeToAvoidBottomInset: false,
-                ));
-          }),
+                    resizeToAvoidBottomInset: false,
+                  ));
+            }),
+      ),
     );
   }
 }

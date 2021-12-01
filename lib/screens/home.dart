@@ -24,9 +24,12 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String search = "";
-  bool isSelected = false;
-  String filter = "Turf";
+  int selected = 0;
+  List<String> filters = ["All", "Turf", "Studio", "Banquet"];
+  // String filter = "All Venues";
   final venueRef = FirebaseFirestore.instance.collection('venues');
+  auth.User? user = auth.FirebaseAuth.instance.currentUser;
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   @override
   Widget build(BuildContext context) {
@@ -34,43 +37,56 @@ class _HomePageState extends State<HomePage> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CircleAvatar(
-                    radius: 12.0,
-                    backgroundImage: AssetImage('images/check.jpg'),
-                  ),
-                ),
-              ],
-            ),
             Align(
               alignment: Alignment(-0.85, 0),
-              child: RichText(
-                text: TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: 'Why Wait ',
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: 'Book it',
-                      style: TextStyle(
-                        color: Colors.purple,
-                      ),
-                    ),
-                    TextSpan(
-                      text: ' Now!',
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: StreamBuilder<DocumentSnapshot>(
+                    stream: users.doc(user!.uid).snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return CircularProgressIndicator();
+                      }
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Why Wait ',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: 'Book it',
+                                  style: TextStyle(
+                                    color: Colors.purple,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' Now!',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: CircleAvatar(
+                              radius: 20.0,
+                              backgroundImage: user == null
+                                  ? AssetImage('images/user_icon.png')
+                                      as ImageProvider
+                                  : NetworkImage(snapshot.data!['profile']),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
               ),
             ),
             Container(
@@ -108,29 +124,38 @@ class _HomePageState extends State<HomePage> {
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter = filter == "Turf" ? "" : "Turf";
+                      selected = 0;
+                    });
+                  },
+                  text: "All Venues",
+                  isSelected: selected == 0,
+                ),
+                VenueContainer(
+                  onPressed: () {
+                    setState(() {
+                      selected = 1;
                     });
                   },
                   text: "Turfs",
-                  isSelected: filter == "Turf" ? true : false,
+                  isSelected: selected == 1,
                 ),
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter = filter == "Studio" ? "" : "Studio";
+                      selected = 2;
                     });
                   },
                   text: "Studios",
-                  isSelected: filter == "Studio" ? true : false,
+                  isSelected: selected == 2,
                 ),
                 VenueContainer(
                   onPressed: () {
                     setState(() {
-                      filter = filter == "Banquet" ? "" : "Banquet";
+                      selected = 3;
                     });
                   },
                   text: "Banquets",
-                  isSelected: filter == "Banquet" ? true : false,
+                  isSelected: selected == 3,
                 ),
               ],
             ),
@@ -196,9 +221,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Text(
                         //if setFlag=1 , then Available
-                        search == ""
-                            ? (filter == "" ? "All" : "$filter")
-                            : search.toUpperCase(),
+                        search == "" ? filters[selected] : search.toLowerCase(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12.0,
@@ -214,12 +237,12 @@ class _HomePageState extends State<HomePage> {
             ///////////////////////////////////////
             StreamBuilder<QuerySnapshot>(
                 stream: search == ""
-                    ? (filter == ""
+                    ? (selected == 0
                         ? venueRef
                             // .orderBy('createdOn', descending: true)
                             .snapshots()
                         : venueRef
-                            .where("category", isEqualTo: "${filter}")
+                            .where("category", isEqualTo: filters[selected])
                             //.orderBy('createdOn', descending: true)
                             .snapshots())
                     : venueRef

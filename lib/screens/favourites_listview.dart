@@ -60,14 +60,21 @@ class _FavouritesState extends State<Favourites> {
     ),
   ];
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: bottomCards.length,
-          itemBuilder: (context, index) {
-            return bottomCards[index];
-          }),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("My Favourites"),
+        ),
+        body: Container(
+          child: ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: bottomCards.length,
+              itemBuilder: (context, index) {
+                return bottomCards[index];
+              }),
+        ),
+      ),
     );
   }
 }
