@@ -15,7 +15,13 @@ class HomePage extends StatefulWidget {
   final void Function()? onClick;
   final void Function()? changeBottomTab;
   final void Function()? goToLogin;
-  const HomePage({Key? key, this.onClick, this.changeBottomTab, this.goToLogin})
+  final void Function()? goToProfile;
+  const HomePage(
+      {Key? key,
+      this.onClick,
+      this.changeBottomTab,
+      this.goToLogin,
+      this.goToProfile})
       : super(key: key);
 
   @override
@@ -41,52 +47,67 @@ class _HomePageState extends State<HomePage> {
               alignment: Alignment(-0.85, 0),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: StreamBuilder<DocumentSnapshot>(
-                    stream: users.doc(user!.uid).snapshots(),
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return CircularProgressIndicator();
-                      }
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: 'Why Wait ',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: 'Book it',
-                                  style: TextStyle(
-                                    color: Colors.purple,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: ' Now!',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: 'Why Wait ',
+                            style: TextStyle(
+                              color: Colors.black,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircleAvatar(
-                              radius: 20.0,
-                              backgroundImage: user == null
-                                  ? AssetImage('images/user_icon.png')
-                                      as ImageProvider
-                                  : NetworkImage(snapshot.data!['profile']),
+                          TextSpan(
+                            text: 'Book it',
+                            style: TextStyle(
+                              color: Colors.purple,
+                            ),
+                          ),
+                          TextSpan(
+                            text: ' Now!',
+                            style: TextStyle(
+                              color: Colors.black,
                             ),
                           ),
                         ],
-                      );
-                    }),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          user == null
+                              ? widget.goToLogin!()
+                              : widget.goToProfile!();
+                        },
+                        child: user == null
+                            ? CircleAvatar(
+                                radius: 20.0,
+                                backgroundImage:
+                                    AssetImage('images/user_icon.png'),
+                              )
+                            : StreamBuilder<DocumentSnapshot>(
+                                stream: users.doc(user!.uid).snapshots(),
+                                builder: (context, snapshot) {
+                                  if (!snapshot.hasData) {
+                                    return CircularProgressIndicator();
+                                  }
+                                  return CircleAvatar(
+                                    radius: 20.0,
+                                    backgroundImage:
+                                        snapshot.data!['profile'] == ""
+                                            ? AssetImage('images/user_icon.png')
+                                                as ImageProvider
+                                            : NetworkImage(
+                                                snapshot.data!['profile']),
+                                  );
+                                }),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Container(
@@ -221,7 +242,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Text(
                         //if setFlag=1 , then Available
-                        search == "" ? filters[selected] : search.toLowerCase(),
+                        search == "" ? filters[selected] : search,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 12.0,

@@ -1,3 +1,4 @@
+import 'package:assignment_practice/constants.dart';
 import 'package:flutter/material.dart';
 import '../widgets/request_card.dart';
 import '../widgets/owner_venue_on_request_page.dart';
@@ -21,19 +22,7 @@ class _BookingRequestPageState extends State<BookingRequestPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.purple.shade800,
-                  // Colors.purple.shade600,
-                  Colors.purple.shade400,
-                  Colors.purple.shade200,
-                  // Colors.purple.shade100,
-                  Colors.deepPurpleAccent,
-                ]),
-          ),
+          decoration: kBoxGradient,
           child: Scaffold(
               backgroundColor: Colors.transparent,
               // appBar: ,

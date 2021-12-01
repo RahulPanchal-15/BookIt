@@ -1,3 +1,4 @@
+import 'package:assignment_practice/constants.dart';
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/user_bookings.dart';
 import 'package:assignment_practice/widgets/status_card.dart';
@@ -26,19 +27,7 @@ class _NotificationsState extends State<Notifications> {
             child: Scaffold(
               body: Center(
                 child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.purple.shade800,
-                          // Colors.purple.shade600,
-                          Colors.purple.shade400,
-                          Colors.purple.shade200,
-                          // Colors.purple.shade100,
-                          Colors.deepPurpleAccent,
-                        ]),
-                  ),
+                  decoration: kBoxGradient,
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   child: Column(

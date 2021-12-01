@@ -58,3 +58,17 @@ var kHomeBottomCardTextStyle = TextStyle(
   fontSize: 10.0,
   color: Colors.white,
 );
+
+var kBoxGradient = BoxDecoration(
+  gradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        Colors.purple.shade800,
+        // Colors.purple.shade600,
+        Colors.purple.shade400,
+        Colors.purple.shade200,
+        // Colors.purple.shade100,
+        Colors.deepPurpleAccent,
+      ]),
+);

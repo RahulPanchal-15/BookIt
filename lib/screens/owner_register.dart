@@ -41,7 +41,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
   // final auth.FirebaseAuth firebaseAuth = auth.FirebaseAuth.instance!.currentUser();
   auth.User? user = auth.FirebaseAuth.instance.currentUser;
   CollectionReference venues = FirebaseFirestore.instance.collection('venues');
-  CollectionReference users = FirebaseFirestore.instance.collection('venues');
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
   String error = "";
 
   Future<void> addVenue(String id) {
@@ -443,7 +443,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                               controllers[5].text,
                                               startTime,
                                               endTime,
-                                              venueUrls);
+                                              venueImages);
 
                                       if (valid == "") {
                                         for (var img in venueImages) {

@@ -149,7 +149,7 @@ class StatusCard extends StatelessWidget {
                           ),
                           TextButton(
                             onPressed: () async {
-                              _makingPhoneCall(snapshot.data!['number']);
+                              _makingPhoneCall(snapshot.data!['contact']);
                             },
                             child: Row(children: const <Widget>[
                               Padding(

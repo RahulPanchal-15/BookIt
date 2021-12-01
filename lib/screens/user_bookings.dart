@@ -5,6 +5,8 @@ import '../widgets/owner_venue_on_request_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../constants.dart';
+
 class UserBookings extends StatefulWidget {
   const UserBookings({Key? key}) : super(key: key);
 
@@ -26,19 +28,7 @@ class _UserBookingsState extends State<UserBookings> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.purple.shade800,
-                  // Colors.purple.shade600,
-                  Colors.purple.shade400,
-                  Colors.purple.shade200,
-                  // Colors.purple.shade100,
-                  Colors.deepPurpleAccent,
-                ]),
-          ),
+          decoration: kBoxGradient,
           child: Scaffold(
               backgroundColor: Colors.transparent,
               // appBar: ,

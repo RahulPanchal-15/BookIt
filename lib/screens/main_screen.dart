@@ -10,7 +10,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 2;
+  int _selectedIndex = 0;
 
   List<GlobalKey<NavigatorState>> _navigatorKeys = [
     GlobalKey<NavigatorState>(),
@@ -96,7 +96,10 @@ class _MainScreenState extends State<MainScreen> {
     return {
       '/': (context) {
         return [
-          HomePage(changeBottomTab: () => _goToTab(2), goToLogin: _goToLogin),
+          HomePage(
+              changeBottomTab: () => _goToTab(2),
+              goToLogin: _goToLogin,
+              goToProfile: () => _goToTab(1)),
           ProfilePage(
             changeBottomTab: () => _goToTab(0),
             onClick: _goToLogin,
