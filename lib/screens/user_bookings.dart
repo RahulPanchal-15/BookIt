@@ -1,3 +1,4 @@
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:assignment_practice/widgets/no_data.dart';
 import 'package:assignment_practice/widgets/status_card.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +36,7 @@ class _UserBookingsState extends State<UserBookings> {
               // appBar: ,
               body: user == null
                   ? Container(
-                      child: CircularProgressIndicator(),
+                      child: CustomLoader(color: Colors.blue, size: 28),
                     )
                   : StreamBuilder<QuerySnapshot>(
                       stream: requestRef
@@ -43,7 +44,7 @@ class _UserBookingsState extends State<UserBookings> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return CircularProgressIndicator();
+                          return CustomLoader(color: Colors.blue, size: 28);
                         } else if (snapshot.data!.docs.length == 0) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 170.0),

@@ -1,4 +1,5 @@
 import 'package:assignment_practice/constants.dart';
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:assignment_practice/widgets/no_data.dart';
 import 'package:flutter/material.dart';
 import '../widgets/request_card.dart';
@@ -32,7 +33,7 @@ class _BookingRequestPageState extends State<BookingRequestPage> {
                       stream: venues.doc(user!.uid).snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
-                          return CircularProgressIndicator();
+                          return CustomLoader(color: Colors.blue, size: 28);
                         }
                         print(snapshot.data!['venues']);
                         return Container(
@@ -83,14 +84,23 @@ class _BookingRequestPageState extends State<BookingRequestPage> {
                                     builder: (context, snapshot) {
                                       if (!snapshot.hasData) {
                                         print(snapshot.hasData);
-                                        return Center(
-                                          child: CircularProgressIndicator(),
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 80),
+                                          child: Center(
+                                            child: CustomLoader(
+                                                color: Colors.blue, size: 28),
+                                          ),
                                         );
                                       } else if (snapshot.data!.docs.length ==
                                           0) {
-                                        return kNoData(
-                                            text: "No Incoming Requests",
-                                            color: Colors.white);
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 80),
+                                          child: kNoData(
+                                              text: "No Incoming Requests",
+                                              color: Colors.white),
+                                        );
                                       } else {
                                         print(snapshot.data!.docs);
                                         return ListView(

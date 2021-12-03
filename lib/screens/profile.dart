@@ -3,6 +3,7 @@ import 'package:assignment_practice/constants.dart';
 import 'package:assignment_practice/screens/faq.dart';
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/signup_login.dart';
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:assignment_practice/widgets/redirect.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -53,8 +54,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return Center(
-                            child: CircularProgressIndicator(),
-                          );
+                              child:
+                                  CustomLoader(color: Colors.blue, size: 28));
                         }
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -185,7 +186,7 @@ class _ProfilePageState extends State<ProfilePage> {
             );
           }
         }
-        return CircularProgressIndicator();
+        return CustomLoader(color: Colors.blue, size: 28);
       },
     );
   }

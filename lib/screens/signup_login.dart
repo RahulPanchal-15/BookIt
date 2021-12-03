@@ -64,6 +64,14 @@ class _LoginPageState extends State<LoginPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
+                  Text(
+                    "BookIt",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 36,
+                        // fontWeight: FontWeight.bold,
+                        fontFamily: 'Pacifico'),
+                  ),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
                     child: Row(
@@ -85,9 +93,9 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                     margin: EdgeInsets.symmetric(
-                        vertical: MediaQuery.of(context).size.height * 0.03,
+                        vertical: MediaQuery.of(context).size.height * 0.001,
                         horizontal: 20),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),

@@ -1,3 +1,4 @@
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -55,7 +56,7 @@ class RequestCard extends StatelessWidget {
         stream: users.doc(userId).snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return CircularProgressIndicator();
+            return Container();
           }
           return Card(
               shape: RoundedRectangleBorder(

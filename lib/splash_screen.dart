@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:assignment_practice/wrapper.dart';
 import 'package:flutter/material.dart';
 import 'screens/home.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 // import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -10,10 +11,15 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final cube = SpinKitFadingCube(
+    color: Colors.white,
+    size: 26,
+  );
+
   @override
   Widget build(BuildContext context) {
     Timer(
-        const Duration(seconds: 1),
+        const Duration(seconds: 2),
         () => Navigator.pushReplacement<void, void>(
             context,
             MaterialPageRoute<void>(
@@ -90,11 +96,9 @@ class _SplashScreenState extends State<SplashScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    CircularProgressIndicator(
-                      color: Colors.greenAccent,
-                    ),
                     Padding(
                       padding: EdgeInsets.only(top: 20.0),
+                      child: cube,
                     ),
                   ],
                 ),

@@ -1,3 +1,4 @@
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,7 +31,7 @@ class StatusCard extends StatelessWidget {
             stream: venueRef.doc(ownerId).snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
-                return CircularProgressIndicator();
+                return Container();
               }
               print(ownerId);
               print(snapshot.data!['venues']);

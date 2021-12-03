@@ -1,8 +1,10 @@
 import 'package:assignment_practice/screens/venue_detail.dart';
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../constants.dart';
 import 'package:get/get.dart';
@@ -43,6 +45,16 @@ class _HomePageState extends State<HomePage> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            // Center(
+            //   child: Text(
+            //     "BookIt",
+            //     style: TextStyle(
+            //         color: Colors.purple,
+            //         fontSize: 28.0,
+            //         // fontWeight: FontWeight.bold,
+            //         fontFamily: 'Pacifico'),
+            //   ),
+            // ),
             Align(
               alignment: Alignment(-0.85, 0),
               child: Padding(
@@ -50,32 +62,13 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: 'Why Wait ',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'Book it',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.purple,
-                            ),
-                          ),
-                          TextSpan(
-                            text: ' Now!',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
+                    Text(
+                      "BookIt",
+                      style: TextStyle(
+                          color: Colors.purple,
+                          fontSize: 28.0,
+                          // fontWeight: FontWeight.bold,
+                          fontFamily: 'Pacifico'),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -87,6 +80,8 @@ class _HomePageState extends State<HomePage> {
                         },
                         child: user == null
                             ? CircleAvatar(
+                                backgroundColor: Colors.white,
+                                foregroundColor: Colors.white,
                                 radius: 20.0,
                                 backgroundImage:
                                     AssetImage('images/user_icon.png'),
@@ -95,10 +90,18 @@ class _HomePageState extends State<HomePage> {
                                 stream: users.doc(user!.uid).snapshots(),
                                 builder: (context, snapshot) {
                                   if (!snapshot.hasData) {
-                                    return CircularProgressIndicator();
+                                    return CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: Colors.white,
+                                      radius: 20.0,
+                                      backgroundImage:
+                                          AssetImage('images/user_icon.png'),
+                                    );
                                   }
                                   return CircleAvatar(
                                     radius: 20.0,
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: Colors.white,
                                     backgroundImage:
                                         snapshot.data!['profile'] == ""
                                             ? AssetImage('images/user_icon.png')
@@ -107,6 +110,39 @@ class _HomePageState extends State<HomePage> {
                                                 snapshot.data!['profile']),
                                   );
                                 }),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment(-0.85, 0),
+              child: RichText(
+                text: TextSpan(
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Why Wait ',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'SourceSansPro',
+                        color: Colors.black,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Book it',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'SourceSansPro',
+                        color: Colors.purple,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' Now!',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'SourceSansPro',
+                        color: Colors.black,
                       ),
                     ),
                   ],
@@ -279,7 +315,13 @@ class _HomePageState extends State<HomePage> {
                   if (!snapshot.hasData) {
                     print(snapshot.hasData);
                     return Center(
-                      child: CircularProgressIndicator(),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 180.0),
+                        child: CustomLoader(
+                          color: Colors.blue,
+                          size: 28,
+                        ),
+                      ),
                     );
                   } else if (snapshot.data!.docs.length == 0) {
                     return Padding(

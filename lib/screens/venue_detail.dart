@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -140,13 +141,22 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            "BookIt",
+            style: TextStyle(
+                color: Colors.black,
+                fontSize: 32.0,
+                // fontWeight: FontWeight.bold,
+                fontFamily: 'Pacifico'),
+          ),
           iconTheme: IconThemeData(
             color: Colors.black, //change your color here
           ),
           automaticallyImplyLeading: true,
           backgroundColor: Colors.white,
           foregroundColor: Colors.purple,
-          toolbarHeight: 30,
+          toolbarHeight: 52,
           shadowColor: Colors.white,
           elevation: 0,
         ),
@@ -158,7 +168,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(
-                  child: CircularProgressIndicator(),
+                  child: CustomLoader(color: Colors.blue, size: 28),
                 );
               }
               return Container(
@@ -223,7 +233,8 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                           .snapshots(),
                                       builder: (context, snapshot) {
                                         if (!snapshot.hasData) {
-                                          return CircularProgressIndicator();
+                                          return CustomLoader(
+                                              color: Colors.blue, size: 28);
                                         }
                                         bool contains = false;
 

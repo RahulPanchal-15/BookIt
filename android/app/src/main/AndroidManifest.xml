@@ -18,8 +18,8 @@
             </intent>
         </queries>
    <application
-        android:label="assignment_practice"
-        android:icon="@mipmap/ic_launcher">
+        android:label="BookIt"
+        android:icon="@mipmap/logo">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

@@ -2,6 +2,7 @@ import 'package:assignment_practice/constants.dart';
 import 'package:assignment_practice/models/user_model.dart';
 import 'package:assignment_practice/screens/requests.dart';
 import 'package:assignment_practice/screens/user_bookings.dart';
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:assignment_practice/widgets/redirect.dart';
 import 'package:assignment_practice/widgets/status_card.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,7 @@ import '../widgets/toggle_switch.dart';
 import '../services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Notifications extends StatefulWidget {
   final void Function()? redirect;
@@ -41,7 +43,8 @@ class _NotificationsState extends State<Notifications> {
                 stream: userRef.doc(user.uid).snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return CircularProgressIndicator();
+                    // return CircularProgressIndicator();
+                    return CustomLoader(color: Colors.blue, size: 28);
                   }
 
                   bool? isOwner = snapshot.data!['isOwner'];
@@ -125,7 +128,7 @@ class _NotificationsState extends State<Notifications> {
                 });
           }
         }
-        return CircularProgressIndicator();
+        return CustomLoader(color: Colors.blue, size: 28);
       },
     );
     // return Container(
