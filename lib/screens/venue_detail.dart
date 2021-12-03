@@ -22,7 +22,7 @@ class VenueDetailPage extends StatefulWidget {
   final String? id;
   final void Function()? goToNotifications;
   final void Function()? goToLogin;
-  bool isFavourited = false;
+  // bool isFavourited = false;
 
   VenueDetailPage({Key? key, this.id, this.goToNotifications, this.goToLogin})
       : super(key: key);
@@ -236,6 +236,9 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                         if (!snapshot.hasData) {
                                           return Container();
                                         }
+                                        if (!snapshot.data!.exists) {
+                                          return Container();
+                                        }
                                         bool contains = false;
                                         bool exists = snapshot
                                                     .data!['favourites']
@@ -254,55 +257,66 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                           // });
                                         }
 
-                                        return GestureDetector(
-                                          onTap: () {
-                                            if (user == null) {
-                                              widget.goToLogin!();
-                                            } else {
-                                              print(
-                                                  snapshot.data!['favourites']);
+                                        return user == null
+                                            ? Container()
+                                            : GestureDetector(
+                                                onTap: () {
+                                                  if (user == null) {
+                                                    widget.goToLogin!();
+                                                  } else {
+                                                    print(snapshot
+                                                        .data!['favourites']);
 
-                                              print(contains);
-                                              List<dynamic> updated =
-                                                  snapshot.data!['favourites'];
-                                              if (contains) {
-                                                updated.remove(widget.id);
-                                                print(updated);
-                                                users.doc(user!.uid).update(
-                                                    {'favourites': updated});
-                                                print(
-                                                    "Removed from Favourites");
-                                                setState(() {
-                                                  widget.isFavourited =
-                                                      !widget.isFavourited;
-                                                });
-                                              } else {
-                                                updated.add(widget.id!);
-                                                print(updated);
-                                                users.doc(user!.uid).update(
-                                                    {'favourites': updated});
-                                                print("Added to Favourites");
-                                                setState(() {
-                                                  widget.isFavourited =
-                                                      !widget.isFavourited;
-                                                });
-                                              }
-                                            }
-                                          },
-                                          child: Icon(
-                                            // widget.isFavourited
-                                            contains
-                                                ? CupertinoIcons.heart_fill
-                                                : Icons.favorite_outline,
-                                            // color: widget.isFavourited
-                                            color: contains
-                                                ? Colors.redAccent[700]
-                                                : Colors.black,
-                                            size: 28.0,
-                                            semanticLabel:
-                                                'Text to announce in accessibility modes',
-                                          ),
-                                        );
+                                                    print(contains);
+                                                    List<dynamic> updated =
+                                                        snapshot.data![
+                                                            'favourites'];
+                                                    if (contains) {
+                                                      updated.remove(widget.id);
+                                                      print(updated);
+                                                      users
+                                                          .doc(user!.uid)
+                                                          .update({
+                                                        'favourites': updated
+                                                      });
+                                                      print(
+                                                          "Removed from Favourites");
+                                                      // setState(() {
+                                                      //   widget.isFavourited =
+                                                      //       !widget.isFavourited;
+                                                      // });
+                                                    } else {
+                                                      updated.add(widget.id!);
+                                                      print(updated);
+                                                      users
+                                                          .doc(user!.uid)
+                                                          .update({
+                                                        'favourites': updated
+                                                      });
+                                                      print(
+                                                          "Added to Favourites");
+                                                      // setState(() {
+                                                      //   widget.isFavourited =
+                                                      //       !widget.isFavourited;
+                                                      // });
+                                                    }
+                                                  }
+                                                },
+                                                child: Icon(
+                                                  // widget.isFavourited
+                                                  contains
+                                                      ? CupertinoIcons
+                                                          .heart_fill
+                                                      : Icons.favorite_outline,
+                                                  // color: widget.isFavourited
+                                                  color: contains
+                                                      ? Colors.redAccent[700]
+                                                      : Colors.black,
+                                                  size: 28.0,
+                                                  semanticLabel:
+                                                      'Text to announce in accessibility modes',
+                                                ),
+                                              );
                                       })
                                 ]),
                             const Divider(),
