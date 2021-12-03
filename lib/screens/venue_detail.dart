@@ -57,6 +57,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   CollectionReference requests =
       FirebaseFirestore.instance.collection('requests');
+  // bool isFav = users.doc(user!.uid);
 
   List<int> getHoursMins(String time) {
     return [int.parse(time.split(":")[0]), int.parse(time.split(":")[1])];
@@ -233,10 +234,25 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                           .snapshots(),
                                       builder: (context, snapshot) {
                                         if (!snapshot.hasData) {
-                                          return CustomLoader(
-                                              color: Colors.blue, size: 28);
+                                          return Container();
                                         }
                                         bool contains = false;
+                                        bool exists = snapshot
+                                                    .data!['favourites']
+                                                    .length ==
+                                                0
+                                            ? false
+                                            : true;
+                                        print(exists);
+
+                                        if (exists) {
+                                          contains = snapshot
+                                              .data!['favourites']
+                                              .contains(widget.id);
+                                          // setState(() {
+                                          //   widget.isFavourited = contains;
+                                          // });
+                                        }
 
                                         return GestureDetector(
                                           onTap: () {
@@ -245,23 +261,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                             } else {
                                               print(
                                                   snapshot.data!['favourites']);
-                                              bool exists = snapshot
-                                                          .data!['favourites']
-                                                          .length ==
-                                                      0
-                                                  ? false
-                                                  : true;
-                                              print(exists);
 
-                                              if (exists) {
-                                                contains = snapshot
-                                                    .data!['favourites']
-                                                    .contains(widget.id);
-                                                setState(() {
-                                                  widget.isFavourited =
-                                                      contains;
-                                                });
-                                              }
                                               print(contains);
                                               List<dynamic> updated =
                                                   snapshot.data!['favourites'];
@@ -277,8 +277,8 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                                       !widget.isFavourited;
                                                 });
                                               } else {
-                                                print(updated);
                                                 updated.add(widget.id!);
+                                                print(updated);
                                                 users.doc(user!.uid).update(
                                                     {'favourites': updated});
                                                 print("Added to Favourites");
@@ -290,10 +290,12 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                             }
                                           },
                                           child: Icon(
-                                            widget.isFavourited
+                                            // widget.isFavourited
+                                            contains
                                                 ? CupertinoIcons.heart_fill
                                                 : Icons.favorite_outline,
-                                            color: widget.isFavourited
+                                            // color: widget.isFavourited
+                                            color: contains
                                                 ? Colors.redAccent[700]
                                                 : Colors.black,
                                             size: 28.0,

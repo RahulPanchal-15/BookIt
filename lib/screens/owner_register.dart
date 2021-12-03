@@ -1,3 +1,4 @@
+import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:assignment_practice/widgets/error_msg.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,6 +39,7 @@ class _OwnerRegisterState extends State<OwnerRegister> {
   List<String?> venueUrls = [];
   TimeOfDay? startTime;
   TimeOfDay? endTime;
+  bool isLoading = false;
   // final auth.FirebaseAuth firebaseAuth = auth.FirebaseAuth.instance!.currentUser();
   auth.User? user = auth.FirebaseAuth.instance.currentUser;
   CollectionReference venues = FirebaseFirestore.instance.collection('venues');
@@ -416,61 +418,70 @@ class _OwnerRegisterState extends State<OwnerRegister> {
                                   margin: EdgeInsets.only(top: 10.0),
                                   padding: EdgeInsets.symmetric(
                                       vertical: 0, horizontal: 10.0),
-                                  child: ElevatedButton(
-                                    style: kButtonStyle.copyWith(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.purple),
-                                      foregroundColor:
-                                          MaterialStateProperty.all(
-                                              Colors.white),
-                                      padding: MaterialStateProperty.all(
-                                        EdgeInsets.symmetric(horizontal: 50),
-                                      ),
-                                    ),
-                                    onPressed: () async {
-                                      // Provider.of<MyAuth>(context, listen: false)
-                                      //     .setIsDone(true);
-                                      // Navigator.pop(context);
+                                  child: isLoading
+                                      ? CustomLoader(
+                                          color: Colors.blue, size: 28)
+                                      : ElevatedButton(
+                                          style: kButtonStyle.copyWith(
+                                            backgroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.purple),
+                                            foregroundColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.white),
+                                            padding: MaterialStateProperty.all(
+                                              EdgeInsets.symmetric(
+                                                  horizontal: 50),
+                                            ),
+                                          ),
+                                          onPressed: () async {
+                                            // Provider.of<MyAuth>(context, listen: false)
+                                            //     .setIsDone(true);
+                                            // Navigator.pop(context);
 
-                                      String valid =
-                                          Validation.validateRegisterVenue(
-                                              controllers[0].text,
-                                              controllers[1].text,
-                                              controllers[2].text,
-                                              controllers[3].text,
-                                              controllers[4].text,
-                                              controllers[5].text,
-                                              startTime,
-                                              endTime,
-                                              venueImages);
+                                            String valid = Validation
+                                                .validateRegisterVenue(
+                                                    controllers[0].text,
+                                                    controllers[1].text,
+                                                    controllers[2].text,
+                                                    controllers[3].text,
+                                                    controllers[4].text,
+                                                    controllers[5].text,
+                                                    startTime,
+                                                    endTime,
+                                                    venueImages);
 
-                                      if (valid == "") {
-                                        for (var img in venueImages) {
-                                          final ref = FirebaseStorage.instance
-                                              .ref()
-                                              .child('venue_images/${user.uid}')
-                                              .child(
-                                                  '${Path.basename(img!.path)}');
-                                          await ref.putFile(img);
-                                          print('Step1');
-                                          final url =
-                                              await ref.getDownloadURL();
-                                          venueUrls.add(url);
-                                        }
-                                        print(venueUrls);
-                                        await addVenue(user.uid);
-                                        await updateIsOwner(user.uid);
-                                        Navigator.pop(context);
-                                        widget.goToHome!();
-                                      } else {
-                                        setState(() {
-                                          error = valid;
-                                        });
-                                      }
-                                    },
-                                    child: Text("Register"),
-                                  ),
+                                            if (valid == "") {
+                                              setState(() {
+                                                isLoading = true;
+                                              });
+                                              for (var img in venueImages) {
+                                                final ref = FirebaseStorage
+                                                    .instance
+                                                    .ref()
+                                                    .child(
+                                                        'venue_images/${user.uid}')
+                                                    .child(
+                                                        '${Path.basename(img!.path)}');
+                                                await ref.putFile(img);
+                                                print('Step1');
+                                                final url =
+                                                    await ref.getDownloadURL();
+                                                venueUrls.add(url);
+                                              }
+                                              print(venueUrls);
+                                              await addVenue(user.uid);
+                                              await updateIsOwner(user.uid);
+                                              Navigator.pop(context);
+                                              widget.goToHome!();
+                                            } else {
+                                              setState(() {
+                                                error = valid;
+                                              });
+                                            }
+                                          },
+                                          child: Text("Register"),
+                                        ),
                                 ),
                               ),
                             ],
