@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:provider/provider.dart';
 import 'package:assignment_practice/widgets/custom_loader.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,10 +9,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import "../widgets/error_msg.dart";
+import '../services/auth_service.dart';
 import '../screens/signup_login.dart';
 import '../utils/select_time.dart';
 import '../constants.dart';
 import '../utils/select_date.dart';
+import '../models/user_model.dart';
 
 class VenueDetailPage extends StatefulWidget {
   // final String? name;
@@ -39,6 +41,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
   DateTime? rdate;
 
   auth.User? user = auth.FirebaseAuth.instance.currentUser;
+
   String error = "";
 
   static const IconData location_pin =
@@ -139,6 +142,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -226,98 +230,113 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                       ),
                                     ),
                                   ),
-                                  StreamBuilder<DocumentSnapshot>(
-                                      stream: users
-                                          .doc(user != null
-                                              ? user!.uid
-                                              : "12616")
-                                          .snapshots(),
-                                      builder: (context, snapshot) {
-                                        if (!snapshot.hasData) {
+                                  StreamBuilder<MyUser?>(
+                                    stream: authService.user,
+                                    builder:
+                                        (_, AsyncSnapshot<MyUser?> snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.active) {
+                                        final MyUser? user = snapshot.data;
+                                        if (user == null) {
                                           return Container();
-                                        }
-                                        if (!snapshot.data!.exists) {
-                                          return Container();
-                                        }
-                                        bool contains = false;
-                                        bool exists = snapshot
-                                                    .data!['favourites']
-                                                    .length ==
-                                                0
-                                            ? false
-                                            : true;
-                                        print(exists);
+                                        } else {
+                                          return StreamBuilder<
+                                                  DocumentSnapshot>(
+                                              stream: users
+                                                  .doc(user.uid)
+                                                  .snapshots(),
+                                              builder: (context, snapshot) {
+                                                if (!snapshot.hasData) {
+                                                  return Container();
+                                                }
+                                                if (!snapshot.data!.exists) {
+                                                  return Container();
+                                                }
+                                                bool contains = false;
+                                                bool exists = snapshot
+                                                            .data!['favourites']
+                                                            .length ==
+                                                        0
+                                                    ? false
+                                                    : true;
+                                                print(exists);
 
-                                        if (exists) {
-                                          contains = snapshot
-                                              .data!['favourites']
-                                              .contains(widget.id);
-                                          // setState(() {
-                                          //   widget.isFavourited = contains;
-                                          // });
-                                        }
+                                                if (exists) {
+                                                  contains = snapshot
+                                                      .data!['favourites']
+                                                      .contains(widget.id);
+                                                  // setState(() {
+                                                  //   widget.isFavourited = contains;
+                                                  // });
+                                                }
 
-                                        return user == null
-                                            ? Container()
-                                            : GestureDetector(
-                                                onTap: () {
-                                                  if (user == null) {
-                                                    widget.goToLogin!();
-                                                  } else {
-                                                    print(snapshot
-                                                        .data!['favourites']);
-
-                                                    print(contains);
-                                                    List<dynamic> updated =
-                                                        snapshot.data![
-                                                            'favourites'];
-                                                    if (contains) {
-                                                      updated.remove(widget.id);
-                                                      print(updated);
-                                                      users
-                                                          .doc(user!.uid)
-                                                          .update({
-                                                        'favourites': updated
-                                                      });
-                                                      print(
-                                                          "Removed from Favourites");
-                                                      // setState(() {
-                                                      //   widget.isFavourited =
-                                                      //       !widget.isFavourited;
-                                                      // });
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    if (user == null) {
+                                                      widget.goToLogin!();
                                                     } else {
-                                                      updated.add(widget.id!);
-                                                      print(updated);
-                                                      users
-                                                          .doc(user!.uid)
-                                                          .update({
-                                                        'favourites': updated
-                                                      });
-                                                      print(
-                                                          "Added to Favourites");
-                                                      // setState(() {
-                                                      //   widget.isFavourited =
-                                                      //       !widget.isFavourited;
-                                                      // });
+                                                      print(snapshot
+                                                          .data!['favourites']);
+
+                                                      print(contains);
+                                                      List<dynamic> updated =
+                                                          snapshot.data![
+                                                              'favourites'];
+                                                      if (contains) {
+                                                        updated
+                                                            .remove(widget.id);
+                                                        print(updated);
+                                                        users
+                                                            .doc(user!.uid)
+                                                            .update({
+                                                          'favourites': updated
+                                                        });
+                                                        print(
+                                                            "Removed from Favourites");
+                                                        // setState(() {
+                                                        //   widget.isFavourited =
+                                                        //       !widget.isFavourited;
+                                                        // });
+                                                      } else {
+                                                        updated.add(widget.id!);
+                                                        print(updated);
+                                                        users
+                                                            .doc(user!.uid)
+                                                            .update({
+                                                          'favourites': updated
+                                                        });
+                                                        print(
+                                                            "Added to Favourites");
+                                                        // setState(() {
+                                                        //   widget.isFavourited =
+                                                        //       !widget.isFavourited;
+                                                        // });
+                                                      }
                                                     }
-                                                  }
-                                                },
-                                                child: Icon(
-                                                  // widget.isFavourited
-                                                  contains
-                                                      ? CupertinoIcons
-                                                          .heart_fill
-                                                      : Icons.favorite_outline,
-                                                  // color: widget.isFavourited
-                                                  color: contains
-                                                      ? Colors.redAccent[700]
-                                                      : Colors.black,
-                                                  size: 28.0,
-                                                  semanticLabel:
-                                                      'Text to announce in accessibility modes',
-                                                ),
-                                              );
-                                      })
+                                                  },
+                                                  child: Icon(
+                                                    // widget.isFavourited
+                                                    contains
+                                                        ? CupertinoIcons
+                                                            .heart_fill
+                                                        : Icons
+                                                            .favorite_outline,
+                                                    // color: widget.isFavourited
+                                                    color: contains
+                                                        ? Colors.redAccent[700]
+                                                        : Colors.black,
+                                                    size: 28.0,
+                                                    semanticLabel:
+                                                        'Text to announce in accessibility modes',
+                                                  ),
+                                                );
+                                              });
+                                        }
+                                      }
+                                      return CustomLoader(
+                                          color: Colors.blue, size: 28);
+                                    },
+                                  ),
                                 ]),
                             const Divider(),
                             VenueDetailTile(
