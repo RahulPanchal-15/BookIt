@@ -287,7 +287,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                                             .remove(widget.id);
                                                         print(updated);
                                                         users
-                                                            .doc(user!.uid)
+                                                            .doc(user.uid)
                                                             .update({
                                                           'favourites': updated
                                                         });
@@ -301,7 +301,7 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                                         updated.add(widget.id!);
                                                         print(updated);
                                                         users
-                                                            .doc(user!.uid)
+                                                            .doc(user.uid)
                                                             .update({
                                                           'favourites': updated
                                                         });
