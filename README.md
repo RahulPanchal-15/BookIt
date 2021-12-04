@@ -1,5 +1,5 @@
 # BookIt
-#### A Venue Booking Flutter Application which allows you to book venues such as Turfs,Studios & Banquets on the fly.
+A Venue Booking Flutter Application which allows you to book venues such as Turfs,Studios & Banquets on the fly.
 
 <img width="219" alt="image" src="https://user-images.githubusercontent.com/59617133/144710237-5e449327-891b-4636-9207-a5173cd083d4.png">
 
