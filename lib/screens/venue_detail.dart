@@ -104,7 +104,8 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
         print(qstart);
         print(qend);
 
-        if (rstart >= qstart && rend <= qend) {
+        if ((rstart >= qstart && rstart <= qend) ||
+            (rend <= qend && rend >= qstart)) {
           print("Slot already booked!");
           slotBookedAlready = true;
         }
@@ -333,8 +334,9 @@ class _VenueDetailPageState extends State<VenueDetailPage> {
                                               });
                                         }
                                       }
-                                      return CustomLoader(
-                                          color: Colors.blue, size: 28);
+                                      // return CustomLoader(
+                                      //     color: Colors.blue, size: 28);
+                                      return Container();
                                     },
                                   ),
                                 ]),
